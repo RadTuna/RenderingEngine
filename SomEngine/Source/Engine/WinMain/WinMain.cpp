@@ -10,5 +10,13 @@
 _Use_decl_annotations_
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 {
-	return Win32Application::Run(hInstance, nCmdShow);
+	Win32Application* winApp = new Win32Application;
+	if (winApp == nullptr)
+	{
+		return 0;
+	}
+
+	winApp->Run(hInstance, nCmdShow);
+
+	return 0;
 }

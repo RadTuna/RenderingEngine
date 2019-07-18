@@ -22,11 +22,11 @@
     <Filter Include="Engine\SomRender\SoftRenderer\GDI">
       <UniqueIdentifier>{98103fc7-441f-4d71-8f79-080df08093c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Math">
+      <UniqueIdentifier>{680d494b-cdac-4fa4-8fd1-ced475544a6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Engine\Engine.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\WinMain\Win32Application.h">
       <Filter>Engine\WinMain</Filter>
     </ClInclude>
@@ -42,6 +42,12 @@
     <ClInclude Include="Source\Engine\Renderer\SoftRenderer\SoftRenderer.h">
       <Filter>Engine\SomRender\SoftRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Engine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Math\MatrixHelpers.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\WinMain\Win32Application.cpp">
@@ -55,6 +61,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Renderer\SoftRenderer\GDIHelper.cpp">
       <Filter>Engine\SomRender\SoftRenderer\GDI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Math\MatrixHelpers.cpp">
+      <Filter>Engine\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

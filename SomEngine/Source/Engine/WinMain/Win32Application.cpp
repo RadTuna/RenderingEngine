@@ -1,15 +1,40 @@
 // Copyright (c) 2014-2019 Sombusta, All Rights Reserved.
 
 #include "Win32Application.h"
-
-HWND Win32Application::m_hwnd = nullptr;
-HINSTANCE Win32Application::m_hInstance = nullptr;
-bool Win32Application::bIsActive = false;
+#include "Engine/Renderer/SoftRenderer/GDIHelper.h"
+#include "Engine/Renderer/SoftRenderer/SoftRenderer.h"
 
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+Win32Application::Win32Application()
+{
+	m_hInstance = nullptr;
+	m_hwnd = nullptr;
+	mGDIHelper = nullptr;
+	mSoftRenderer = nullptr;
+	bIsActive = false;
+}
+
+Win32Application::~Win32Application()
+{
+	if (mSoftRenderer != nullptr)
+	{
+		delete mSoftRenderer;
+		mSoftRenderer = nullptr;
+	}
+
+	if (mGDIHelper != nullptr)
+	{
+		delete mGDIHelper;
+		mGDIHelper = nullptr;
+	}
+}
+
+// 윈도우의 초기화 및 메인루프를 동시에 담당합니다.
 int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
+	applicationHandle = this;
+
 	m_hInstance = hInstance;
 
 	// Parse the command line parameters
@@ -24,7 +49,7 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 	windowClass.lpfnWndProc = WindowProc;
 	windowClass.cbClsExtra = 0;
 	windowClass.cbWndExtra = 0;
-	windowClass.hInstance = hInstance;
+	windowClass.hInstance = m_hInstance;
 	windowClass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_SOMENGINE));
 	windowClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	windowClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
@@ -32,8 +57,12 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 	windowClass.lpszClassName = SomTitle;
 	windowClass.hIconSm = LoadIcon(windowClass.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-	RegisterClassEx(&windowClass);
+	if (RegisterClassEx(&windowClass) == 0) // 0이면 Register에 실패하여 Return
+	{
+		return 0;
+	}
 
+	
 	// SomWorks :D // Instance Init // 인스턴스 핸들을 저장하고 주 창을 만듭니다.
 	m_hInstance = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
@@ -51,14 +80,28 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 		windowRect.bottom - windowRect.top,
 		nullptr,        // We have no parent window.
 		nullptr,        // We aren't using menus.
-		hInstance,
+		m_hInstance,
 		nullptr);
 
-	ShowWindow(m_hwnd, nCmdShow);
+	if (m_hwnd == nullptr)
+	{
+		return 0;
+	}
+
+	ShowWindow(m_hwnd, SW_SHOW);
 	UpdateWindow(m_hwnd);
 	   
 	// SomWorks :D // Main sample loop.
 	MSG msg = {};
+
+	mSoftRenderer = new SoftRenderer;
+	if (mSoftRenderer == nullptr)
+	{
+		return 0;
+	}
+
+	mSoftRenderer->Initialize(mGDIHelper);
+	
 
 	while (msg.message != WM_QUIT)
 	{
@@ -71,7 +114,7 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 		else if (bIsActive)
 		{
 			// SomWorks :D // SoftRender 메인 업데이트
-			UpdateFrame();
+			mSoftRenderer->UpdateFrame();
 		}
 		else
 		{
@@ -84,53 +127,8 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 }
 
 // Main message handler for the sample.
-LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Win32Application::MessageHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-/*
-	switch (message)
-	{
-	case WM_CREATE:
-	{
-		// Save the DXSample* passed in to CreateWindow.
-		LPCREATESTRUCT pCreateStruct = reinterpret_cast<LPCREATESTRUCT>(lParam);
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreateStruct->lpCreateParams));
-	}
-	return 0;
-
-	case WM_COMMAND:
-	{
-		int wmId = LOWORD(wParam);
-		// 메뉴 선택을 구문 분석합니다:
-		switch (wmId)
-		{
-		case IDM_ABOUT:
-			DialogBox(m_hInstance, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-			break;
-		case IDM_EXIT:
-			DestroyWindow(hWnd);
-			break;
-					default:
-						return DefWindowProc(hWnd, message, wParam, lParam);
-		}
-	}
-	return 0;
-
-	case WM_KEYDOWN:
-		return 0;
-
-	case WM_KEYUP:
-		return 0;
-
-	case WM_PAINT:
-		return 0;
-
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-	}
-
-	// Handle any messages the switch statement didn't.
-	return DefWindowProc(hWnd, message, wParam, lParam);*/
 
 	switch (message)
 	{
@@ -155,7 +153,13 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
 	// SomWorks :D // GDI Initialize
 	case WM_CREATE:
 	{
-		InitGDI(hWnd);
+		mGDIHelper = new GDIHelper;
+		if (mGDIHelper == nullptr)
+		{
+			return 0;
+		}
+
+		mGDIHelper->InitGDI(hWnd);
 		bIsActive = true;
 	}
 	break;
@@ -171,14 +175,28 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
 
 	case WM_DESTROY: // 종료 메시지를 게시하고 반환합니다.
 		bIsActive = false;
-		ReleaseGDI(hWnd);
+		mGDIHelper->ReleaseGDI(hWnd);
 		PostQuitMessage(0);
+
+		delete mGDIHelper;
+		mGDIHelper = nullptr;
+
+		delete mSoftRenderer;
+		mSoftRenderer = nullptr;
+
 		break;
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
+}
+
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+
+	return applicationHandle->MessageHandler(hWnd, message, wParam, lParam);
+
 }
 
 // SomWorks :D // 정보 대화 상자의 메시지 처리기입니다.

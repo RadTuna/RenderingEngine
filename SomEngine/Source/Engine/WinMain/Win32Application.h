@@ -7,20 +7,34 @@
 class Win32Application
 {
 public:
+
 	// SomWorks :D // WinAPI Setup
-	static int Run(HINSTANCE hInstance, int nCmdShow);
+	int Run(HINSTANCE hInstance, int nCmdShow);
 
 	// SomWorks :D // 초기화 성공 여부
-	static bool bIsActive;
+	bool bIsActive;
 
-private:
-	static HWND m_hwnd;
-	static HINSTANCE m_hInstance;
+	Win32Application();
+	~Win32Application();
 
-protected:
-	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT CALLBACK MessageHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+//private:
+	
+	HWND m_hwnd;
+	HINSTANCE m_hInstance;
+	class GDIHelper* mGDIHelper;
+	class SoftRenderer* mSoftRenderer;
 
 public:
-	static HWND GetHwnd() { return m_hwnd; }
-	static HINSTANCE GetHInstnace() { return m_hInstance; }
+
+	inline HWND GetHwnd() { return m_hwnd; }
+	inline HINSTANCE GetHInstnace() { return m_hInstance; }
+
 };
+
+
+
+static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+static Win32Application* applicationHandle = nullptr;

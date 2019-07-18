@@ -6,12 +6,30 @@
 
 #include "Engine/Engine.h"
 
-extern ULONG g_CurrentColor;
-extern BYTE *g_pBits;
+class GDIHelper
+{
+public:
 
-void InitGDI(HWND hWnd);
-void ReleaseGDI(HWND hWnd);
+	GDIHelper() = default;
+	~GDIHelper() = default;
 
-void SetColor(BYTE r, BYTE g, BYTE b);
-void Clear();
-void BufferSwap();
+	void InitGDI(HWND hWnd);
+	void ReleaseGDI(HWND hWnd);
+
+	void SetColor(BYTE r, BYTE g, BYTE b);
+	void Clear();
+	void BufferSwap();
+
+private:
+
+	ULONG currentColor;
+	BYTE* pBits;
+	HDC	hScreenDC, hMemoryDC;
+	HBITMAP hDefaultBitmap, hDIBitmap;
+
+public:
+
+	inline BYTE* GetpBits() const { return pBits; }
+	inline ULONG GetCurrentColor() const { return currentColor; }
+
+};

@@ -5,7 +5,7 @@
 // SomWorks :D // WinAPI Windows Setup
 #define SomWidth 1280
 #define SomHeight 720
-#define SomTitle L"SomEngine_Win32"
+#define SomTitle L"RenderingEngine_Win32"
 
 // SomWorks :D // Renderer Setup
 #define bUseSoftRenderer true
