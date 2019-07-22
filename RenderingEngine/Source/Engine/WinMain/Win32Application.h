@@ -34,7 +34,6 @@ public:
 };
 
 
-
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 static Win32Application* applicationHandle = nullptr;

@@ -14,6 +14,13 @@ struct Matrix2x2
 	int mat22;
 };
 
+struct TriangleVertices
+{
+	Vector2D FirstVertex;
+	Vector2D SecondVertex;
+	Vector2D ThirdVertex;
+};
+
 class MatrixHelpers
 {
 public:

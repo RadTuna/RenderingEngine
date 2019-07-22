@@ -7,19 +7,16 @@
     <Filter Include="Engine\WinMain">
       <UniqueIdentifier>{8acc7cdf-be5a-40d4-8f33-1b4e6e09da59}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main">
-      <UniqueIdentifier>{1e2e29a3-7992-4740-9763-e58f04f8c7ef}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Resource">
       <UniqueIdentifier>{e418c61a-bec7-4104-a054-c23282bad268}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\SomRender">
+    <Filter Include="Engine\Renderer">
       <UniqueIdentifier>{64a521b2-aad6-4ec0-b425-f2794ad4a3e1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\SomRender\SoftRenderer">
+    <Filter Include="Engine\Renderer\SoftRenderer">
       <UniqueIdentifier>{00251de8-d0ae-4a97-9fdf-82be990a46a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\SomRender\SoftRenderer\GDI">
+    <Filter Include="Engine\Renderer\SoftRenderer\GDI">
       <UniqueIdentifier>{98103fc7-441f-4d71-8f79-080df08093c3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Math">

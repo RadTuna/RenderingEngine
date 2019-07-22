@@ -12,6 +12,11 @@ void GDIHelper::SetColor(BYTE r, BYTE g, BYTE b)
 	currentColor = RGB(b, g, r);
 }
 
+void GDIHelper::SetColor(ULONG color)
+{
+	currentColor = color;
+}
+
 void GDIHelper::Clear()
 {
 	ULONG* dest = (ULONG*)pBits;
