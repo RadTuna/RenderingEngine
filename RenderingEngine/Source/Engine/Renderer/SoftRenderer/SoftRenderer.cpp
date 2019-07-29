@@ -47,12 +47,12 @@ void SoftRenderer::UpdateFrame()
 	TriangleVertices vertices;
 
 	points[0] = { 0, 100 };
-	points[1] = { 100, -100 };
+	points[1] = { 150, -150 };
 	points[2] = { -100, -100 };
 
-	vertices.FirstVertex = points[0];
-	vertices.SecondVertex = points[1];
-	vertices.ThirdVertex = points[2];
+	vertices.firstVertex = points[0];
+	vertices.secondVertex = points[1];
+	vertices.thirdVertex = points[2];
 
 	secPoints[0] = { 0, 150 };
 	secPoints[1] = { 135, -120 };
@@ -108,15 +108,15 @@ void SoftRenderer::DrawLine(Vector2D startLoc, Vector2D endLoc, bool UseAntialia
 		{
 			if (UseAntialiase == true)
 			{
-				IntSwap(&startLoc.X, &startLoc.Y);
+				std::swap(startLoc.X, startLoc.Y);
 				GetYLocationf(abs(height), abs(width), x, &yCoord, &UpWeight);
-				IntSwap(&startLoc.X, &startLoc.Y);
+				std::swap(startLoc.X, startLoc.Y);
 			}
 			else
 			{
-				IntSwap(&startLoc.X, &startLoc.Y);
+				std::swap(startLoc.X, startLoc.Y);
 				GetYLocation(abs(height), abs(width), x, &yCoord);
-				IntSwap(&startLoc.X, &startLoc.Y);
+				std::swap(startLoc.X, startLoc.Y);
 			}
 		}
 
@@ -182,31 +182,30 @@ void SoftRenderer::DrawLine(Vector2D startLoc, Vector2D endLoc, bool UseAntialia
 	return;
 }
 
-void SoftRenderer::DrawTriangle(Vector2D vertex1, Vector2D vertex2, Vector2D vertex3)
-{
-	Vector2D maxVertex = { max(vertex1.X, max(vertex2.X, vertex3.X)), max(vertex1.Y, max(vertex2.Y, vertex3.Y)) };
-	Vector2D minVertex = { min(vertex1.X, min(vertex2.X, vertex3.X)), min(vertex1.Y, min(vertex2.Y, vertex3.Y)) };
-
-	for (int x = minVertex.X; x <= maxVertex.X; ++x)
-	{
-		for (int y = minVertex.Y; y <= maxVertex.X; ++y)
-		{
-			Vector2D CurrentLocation = { x, y };
-			if (IsInTriangle(vertex1, vertex2, vertex3, CurrentLocation))
-			{
-				PutPixel(x, y);
-			}
-		}
-	}
-
-	return;
-}
-
 void SoftRenderer::DrawTriangle(TriangleVertices vertices)
 {
-	DrawTriangle(vertices.FirstVertex, vertices.SecondVertex, vertices.ThirdVertex);
+	// 버텍스를 Y값 순으로 정렬함.
+	MatrixHelpers::SortVecticesByY(&vertices);
 
-	return;
+	if (vertices.secondVertex.Y == vertices.thirdVertex.Y)
+	{
+		DrawBottomTriangle(vertices.firstVertex, vertices.secondVertex, vertices.thirdVertex);
+	}
+	else if (vertices.firstVertex.Y == vertices.secondVertex.Y)
+	{
+		DrawTopTriangle(vertices.firstVertex, vertices.secondVertex, vertices.thirdVertex);
+	}
+	else
+	{
+		Vector2D NewVertex;
+		NewVertex.Y = vertices.secondVertex.Y;
+		NewVertex.X = (vertices.firstVertex.X + ((vertices.secondVertex.Y - vertices.firstVertex.Y) /
+			(vertices.thirdVertex.Y - vertices.firstVertex.Y)) * (vertices.thirdVertex.X - vertices.firstVertex.X));
+		DrawBottomTriangle(vertices.firstVertex, vertices.secondVertex, NewVertex);
+		DrawTopTriangle(vertices.secondVertex, NewVertex, vertices.thirdVertex);
+	}
+
+
 }
 
 void SoftRenderer::GetYLocation(int width, int height, int inX, int* outY)
@@ -252,13 +251,69 @@ bool SoftRenderer::IsInTriangle(Vector2D vertex1, Vector2D vertex2, Vector2D ver
 	return false;
 }
 
-void SoftRenderer::IntSwap(int* valueA, int* valueB)
+void SoftRenderer::DrawBottomTriangle(Vector2D point1, Vector2D point2, Vector2D point3)
 {
-	int temp = *valueA;
-	*valueA = *valueB;
-	*valueB = temp;
+	if (point2.Y != point3.Y)
+	{
+		return;
+	}
+
+	float inclinationL = (point2.X - point1.X) / (point2.Y - point1.Y);
+	float inclinationR = (point3.X - point1.X) / (point3.Y - point1.Y);
+
+	float StartPosX = point1.X;
+	float EndPosX = point1.X;
+
+	for (int ScanLineY = point1.Y; ScanLineY >= point2.Y; --ScanLineY)
+	{
+		Vector2D TempPos1 = { StartPosX, ScanLineY };
+		Vector2D TempPos2 = { EndPosX, ScanLineY };
+		DrawFlatLine(TempPos1, TempPos2);
+
+		StartPosX -= inclinationL;
+		EndPosX -= inclinationR;
+	}
 
 	return;
+}
+
+void SoftRenderer::DrawTopTriangle(Vector2D point1, Vector2D point2, Vector2D point3)
+{
+	if (point1.Y != point2.Y)
+	{
+		return;
+	}
+
+	float inclinationL = (point3.X - point1.X) / (point3.Y - point1.Y);
+	float inclinationR = (point3.X - point2.X) / (point3.Y - point2.Y);
+
+	float StartPosX = point3.X;
+	float EndPosX = point3.X;
+
+	for (int ScanLineY = point3.Y; ScanLineY <= point1.Y; ++ScanLineY)
+	{
+		Vector2D TempPos1 = { StartPosX, ScanLineY };
+		Vector2D TempPos2 = { EndPosX, ScanLineY };
+		DrawFlatLine(TempPos1, TempPos2);
+
+		StartPosX += inclinationL;
+		EndPosX += inclinationR;
+	}
+
+	return;
+}
+
+void SoftRenderer::DrawFlatLine(Vector2D point1, Vector2D point2)
+{
+	if (point1.Y != point2.Y)
+	{
+		return;
+	}
+
+	for (int i = point1.X; i <= point2.X; ++i)
+	{
+		PutPixel(i, point1.Y);
+	}
 }
 
 

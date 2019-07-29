@@ -38,3 +38,25 @@ Vector2D MatrixHelpers::VectorSub(Vector2D inVector1, Vector2D inVector2)
 
 	return outVector;
 }
+
+void MatrixHelpers::SortVecticesByY(TriangleVertices* vertices)
+{
+	if (!(vertices->firstVertex.Y > vertices->secondVertex.Y) && (vertices->firstVertex.Y > vertices->thirdVertex.Y))
+	{
+		if (vertices->secondVertex.Y > vertices->thirdVertex.Y)
+		{
+			std::swap(vertices->firstVertex, vertices->secondVertex);
+		}
+		else
+		{
+			std::swap(vertices->firstVertex, vertices->thirdVertex);
+		}
+	}
+
+	if (!vertices->secondVertex.Y > vertices->thirdVertex.Y)
+	{
+		std::swap(vertices->secondVertex, vertices->thirdVertex);
+	}
+
+	return;
+}
