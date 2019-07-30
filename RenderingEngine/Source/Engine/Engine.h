@@ -41,8 +41,8 @@ using namespace std;
 #include "Resource/Resource.h"
 
 #if bUseSoftRenderer
-#include "Renderer/SoftRenderer/GDIHelper.h"
-#include "Renderer/SoftRenderer/SoftRenderer.h"
+#include "SoftRenderer/GDIHelper.h"
+#include "SoftRenderer/SoftRenderer.h"
 #endif
 
 #if bUseDX11

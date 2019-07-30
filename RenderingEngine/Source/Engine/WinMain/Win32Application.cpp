@@ -1,8 +1,8 @@
 // Copyright (c) 2014-2019 Sombusta, All Rights Reserved.
 
 #include "Win32Application.h"
-#include "Engine/Renderer/SoftRenderer/GDIHelper.h"
-#include "Engine/Renderer/SoftRenderer/SoftRenderer.h"
+#include "Engine/SoftRenderer/GDIHelper.h"
+#include "Engine/SoftRenderer/SoftRenderer.h"
 
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -19,6 +19,7 @@ Win32Application::~Win32Application()
 {
 	if (mSoftRenderer != nullptr)
 	{
+		mSoftRenderer->Release();
 		delete mSoftRenderer;
 		mSoftRenderer = nullptr;
 	}

@@ -1,5 +1,6 @@
 
 #include "GDIHelper.h"
+#include "Engine/Math/RenderMath.h"
 
 
 void GDIHelper::BufferSwap()
@@ -10,6 +11,11 @@ void GDIHelper::BufferSwap()
 void GDIHelper::SetColor(BYTE r, BYTE g, BYTE b)
 {
 	currentColor = RGB(b, g, r);
+}
+
+void GDIHelper::SetColor(struct ColorRGB rgb)
+{
+	currentColor = RGB(rgb.Blue, rgb.Green, rgb.Red);
 }
 
 void GDIHelper::SetColor(ULONG color)

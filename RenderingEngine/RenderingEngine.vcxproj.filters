@@ -33,16 +33,22 @@
     <ClInclude Include="Source\Engine\Resource\targetver.h">
       <Filter>Engine\Resource</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\SoftRenderer\GDIHelper.h">
+      <Filter>Engine\Renderer\SoftRenderer\GDI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\SoftRenderer\Draw2DManager.h">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\SoftRenderer\SoftRenderer.h">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Math\RenderMath.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Engine\Engine.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Math\MatrixHelpers.h">
-      <Filter>Engine\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Renderer\SoftRenderer\GDIHelper.h">
-      <Filter>Engine\Renderer\SoftRenderer\GDI</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Engine\Renderer\SoftRenderer\SoftRenderer.h">
+    <ClInclude Include="Source\Engine\SoftRenderer\TriangleClass.h">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,13 +59,19 @@
     <ClCompile Include="Source\Engine\WinMain\WinMain.cpp">
       <Filter>Engine\WinMain</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Math\MatrixHelpers.cpp">
-      <Filter>Engine\Math</Filter>
+    <ClCompile Include="Source\Engine\SoftRenderer\Draw2DManager.cpp">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Renderer\SoftRenderer\GDIHelper.cpp">
+    <ClCompile Include="Source\Engine\SoftRenderer\SoftRenderer.cpp">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\SoftRenderer\GDIHelper.cpp">
       <Filter>Engine\Renderer\SoftRenderer\GDI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Renderer\SoftRenderer\SoftRenderer.cpp">
+    <ClCompile Include="Source\Engine\Math\RenderMath.cpp">
+      <Filter>Engine\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\SoftRenderer\TriangleClass.cpp">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
   </ItemGroup>
