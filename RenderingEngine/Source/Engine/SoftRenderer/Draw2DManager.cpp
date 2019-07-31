@@ -42,7 +42,7 @@ bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGD
 	return true;
 }
 
-void Draw2DManager::DrawLine(Vector2D startLoc, Vector2D endLoc, ColorRGB rgb, bool useAntiAliase)
+void Draw2DManager::DrawLine(Vector2 startLoc, Vector2 endLoc, ColorRGB rgb, bool useAntiAliase)
 {
 	mGDIHelper->SetColor(rgb);
 
@@ -86,7 +86,7 @@ void Draw2DManager::DrawLine(Vector2D startLoc, Vector2D endLoc, ColorRGB rgb, b
 			}
 		}
 
-		Vector2D tempLoc = { x, yCoord };
+		Vector2 tempLoc = { x, yCoord };
 
 		if (inclination >= 1) // 기울기 1 초과
 		{
@@ -179,6 +179,7 @@ void Draw2DManager::GetYLocationf(int width, int height, int inX, int* outY, flo
 
 bool Draw2DManager::SetTriangle(TriangleClass* vertices, int vertexCount)
 {
+
 	mTriangleList = new class TriangleClass[vertexCount];
 	if (mTriangleList == nullptr)
 	{
@@ -206,17 +207,20 @@ void Draw2DManager::ClearTriangle()
 	return;
 }
 
-void Draw2DManager::DrawTriangleList(ColorRGB rgb)
+void Draw2DManager::DrawTriangleList()
 {
+	// 현재 버텍스 카운트를 초기화.
+	mCurrentVertexCount = 0;
+
 	for (int i = 0; i < mVertexCount; ++i)
 	{
-		DrawTriangle(mTriangleList[i], rgb);
+		DrawTriangle(mTriangleList[i]);
+		mCurrentVertexCount++;
 	}
 }
 
-void Draw2DManager::DrawTriangle(TriangleClass vertices, ColorRGB rgb)
+void Draw2DManager::DrawTriangle(TriangleClass vertices)
 {
-	mGDIHelper->SetColor(rgb);
 
 	// 버텍스를 Y값 순으로 정렬함.
 	RenderMath::SortVecticesByY(&vertices);
@@ -260,8 +264,8 @@ void Draw2DManager::DrawBottomTriangle(Vertex point1, Vertex point2, Vertex poin
 		Vertex TempVertex1;
 		Vertex TempVertex2;
 
-		TempVertex1.position = RenderMath::Vector2DSet(StartPosX, ScanLineY);
-		TempVertex2.position = RenderMath::Vector2DSet(EndPosX, ScanLineY);
+		TempVertex1.position = RenderMath::Vector2Set(StartPosX, ScanLineY);
+		TempVertex2.position = RenderMath::Vector2Set(EndPosX, ScanLineY);
 
 		DrawFlatLine(TempVertex1, TempVertex2);
 
@@ -290,8 +294,8 @@ void Draw2DManager::DrawTopTriangle(Vertex point1, Vertex point2, Vertex point3)
 		Vertex TempVertex1;
 		Vertex TempVertex2;
 
-		TempVertex1.position = RenderMath::Vector2DSet(StartPosX, ScanLineY);
-		TempVertex2.position = RenderMath::Vector2DSet(EndPosX, ScanLineY);
+		TempVertex1.position = RenderMath::Vector2Set(StartPosX, ScanLineY);
+		TempVertex2.position = RenderMath::Vector2Set(EndPosX, ScanLineY);
 
 		DrawFlatLine(TempVertex1, TempVertex2);
 
@@ -311,6 +315,16 @@ void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
 
 	for (int i = point1.position.X; i <= point2.position.X; ++i)
 	{
+		Vector2 currentPoint = { i, point1.position.Y };
+
+		Vector3 vertexWeight = mTriangleList[mCurrentVertexCount].GetVertexWeight(currentPoint);
+		ColorRGB currentColor = 
+			mTriangleList[mCurrentVertexCount].point1.Color * vertexWeight.X +
+			mTriangleList[mCurrentVertexCount].point2.Color * vertexWeight.Y +
+			mTriangleList[mCurrentVertexCount].point3.Color * vertexWeight.Z;
+
+		mGDIHelper->SetColor(currentColor);
+
 		mSoftRenderer->PutPixel(i, point1.position.Y);
 	}
 

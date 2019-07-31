@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <cmath>
+#include <numeric>
 
 // SomWorks :D // C Header, C 스타일 런타임 헤더 파일입니다.
 #include <stdlib.h>

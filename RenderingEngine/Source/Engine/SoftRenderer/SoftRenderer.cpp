@@ -37,7 +37,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 	}
 
 	// 트라이앵글리스트를 DrawManager에 등록
-	int vertexCount = 3;
+	int vertexCount = 1;
 
 	vertices = new TriangleClass[vertexCount];
 	if (vertices == nullptr)
@@ -45,17 +45,12 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 		return false;
 	}
 
-	vertices[0].point1.position = RenderMath::Vector2DSet(0, 100);
-	vertices[0].point2.position = RenderMath::Vector2DSet(-100, -100);
-	vertices[0].point3.position = RenderMath::Vector2DSet(100, -100);
-
-	vertices[1].point1.position = RenderMath::Vector2DSet(-200, 100);
-	vertices[1].point2.position = RenderMath::Vector2DSet(0, 100);
-	vertices[1].point3.position = RenderMath::Vector2DSet(-100, -100);
-
-	vertices[2].point1.position = RenderMath::Vector2DSet(0, 100);
-	vertices[2].point2.position = RenderMath::Vector2DSet(200, 100);
-	vertices[2].point3.position = RenderMath::Vector2DSet(100, -100);
+	vertices[0].point1.position = RenderMath::Vector2Set(0, 100);
+	vertices[0].point1.Color = RenderMath::ColorRGBSet(255, 0, 0);
+	vertices[0].point2.position = RenderMath::Vector2Set(-100, -100);
+	vertices[0].point2.Color = RenderMath::ColorRGBSet(0, 255, 0);
+	vertices[0].point3.position = RenderMath::Vector2Set(100, -100);
+	vertices[0].point3.Color = RenderMath::ColorRGBSet(0, 0, 255);
 
 	Result = mDraw2DManager->SetTriangle(vertices, vertexCount);
 	if (Result == false)
@@ -93,7 +88,7 @@ void SoftRenderer::PutPixel(int x, int y)
 
 void SoftRenderer::UpdateFrame()
 {
-	Vector2D points[3];
+	Vector2 points[3];
 	ColorRGB Color;
 
 	points[0] = { 0, 150 };
@@ -113,7 +108,7 @@ void SoftRenderer::UpdateFrame()
 	mDraw2DManager->DrawLine(points[2], points[0], Color, false);
 
 	// DrawTriangle
-	mDraw2DManager->DrawTriangleList(Color);
+	mDraw2DManager->DrawTriangleList();
 
 	// Buffer Swap 
 	mGDIHelper->BufferSwap();

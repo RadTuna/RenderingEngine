@@ -6,9 +6,8 @@
 
 struct Vertex
 {
-	Vector2D position;
-	Vector2D uv;
-	Vector2D normal;
+	Vector2 position;
+	ColorRGB Color;
 };
 
 class TriangleClass
@@ -17,6 +16,8 @@ public:
 
 	TriangleClass();
 	~TriangleClass();
+
+	Vector3 GetVertexWeight(Vector2& inPoint);
 
 public:
 

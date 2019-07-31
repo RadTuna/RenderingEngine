@@ -18,5 +18,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
 	winApp->Run(hInstance, nCmdShow);
 
+	delete winApp;
+	winApp = nullptr;
+
 	return 0;
 }
