@@ -51,6 +51,9 @@
     <ClInclude Include="Source\Engine\SoftRenderer\TriangleClass.h">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\SoftRenderer\TextureHelper.h">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\WinMain\Win32Application.cpp">
@@ -72,6 +75,9 @@
       <Filter>Engine\Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\SoftRenderer\TriangleClass.cpp">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\SoftRenderer\TextureHelper.cpp">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
   </ItemGroup>

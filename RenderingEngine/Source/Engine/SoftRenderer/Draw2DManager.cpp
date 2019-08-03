@@ -4,6 +4,7 @@
 #include "Engine/SoftRenderer/SoftRenderer.h"
 #include "Engine/Math/RenderMath.h"
 #include "Engine/SoftRenderer/TriangleClass.h"
+#include "Engine/SoftRenderer/TextureHelper.h"
 
 
 #define GetEndLoc(expr) ((expr) ? abs(startLoc.X - endLoc.X) : abs(startLoc.Y - endLoc.Y))
@@ -14,6 +15,7 @@ Draw2DManager::Draw2DManager()
 	mGDIHelper = nullptr;
 	mSoftRenderer = nullptr;
 	mTriangleList = nullptr;
+	mTextureHelper = nullptr;
 }
 
 Draw2DManager::~Draw2DManager()
@@ -25,7 +27,7 @@ Draw2DManager::~Draw2DManager()
 	}
 }
 
-bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGDIHelper)
+bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGDIHelper, const char* filename)
 {
 	if (initSoftRenderer == nullptr)
 	{
@@ -39,6 +41,14 @@ bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGD
 	mSoftRenderer = initSoftRenderer;
 	mGDIHelper = initGDIHelper;
 
+	mTextureHelper = new class TextureHelper;
+	if (mTextureHelper == nullptr)
+	{
+		return false;
+	}
+
+	useTexture = mTextureHelper->Initialize(filename);
+
 	return true;
 }
 
@@ -50,12 +60,12 @@ void Draw2DManager::DrawLine(Vector2 startLoc, Vector2 endLoc, ColorRGB rgb, boo
 	const Matrix2x2 inverseX = { -1, 0, 0, 1 };
 	const Matrix2x2 inverseY = { 1, 0, 0, -1 };
 
-	int width = startLoc.X - endLoc.X;
-	int height = startLoc.Y - endLoc.Y;
-	int yCoord = 0;
-	int inclination = (width == 0) ? 100 : abs(height / width);
+	float width = startLoc.X - endLoc.X;
+	float height = startLoc.Y - endLoc.Y;
+	float yCoord = 0.0f;
+	float inclination = (width == 0) ? 100.0f : abs(height / width);
 
-	for (int x = 0; x <= GetEndLoc(inclination < 1) - 1; ++x)
+	for (int x = 0; x <= GetEndLoc(inclination < 1); ++x)
 	{
 		float UpWeight = 0.0f;
 
@@ -63,11 +73,11 @@ void Draw2DManager::DrawLine(Vector2 startLoc, Vector2 endLoc, ColorRGB rgb, boo
 		{
 			if (useAntiAliase == true)
 			{
-				GetYLocationf(abs(width), abs(height), x, &yCoord, &UpWeight);
+				GetYLocationf(abs(width), abs(height), (float)x, &yCoord, &UpWeight);
 			}
 			else
 			{
-				GetYLocation(abs(width), abs(height), x, &yCoord);
+				GetYLocation(abs(width), abs(height), (float)x, &yCoord);
 			}
 		}
 		else // 기울기 1 초과
@@ -75,18 +85,18 @@ void Draw2DManager::DrawLine(Vector2 startLoc, Vector2 endLoc, ColorRGB rgb, boo
 			if (useAntiAliase == true)
 			{
 				std::swap(startLoc.X, startLoc.Y);
-				GetYLocationf(abs(height), abs(width), x, &yCoord, &UpWeight);
+				GetYLocationf(abs(height), abs(width), (float)x, &yCoord, &UpWeight);
 				std::swap(startLoc.X, startLoc.Y);
 			}
 			else
 			{
 				std::swap(startLoc.X, startLoc.Y);
-				GetYLocation(abs(height), abs(width), x, &yCoord);
+				GetYLocation(abs(height), abs(width), (float)x, &yCoord);
 				std::swap(startLoc.X, startLoc.Y);
 			}
 		}
 
-		Vector2 tempLoc = { x, yCoord };
+		Vector2 tempLoc = { (float)x, yCoord };
 
 		if (inclination >= 1) // 기울기 1 초과
 		{
@@ -124,31 +134,31 @@ void Draw2DManager::DrawLine(Vector2 startLoc, Vector2 endLoc, ColorRGB rgb, boo
 			{
 				ULONG currentColor = mGDIHelper->GetCurrentColor();
 				mGDIHelper->SetColor(static_cast<ULONG>(currentColor * (1.0f - UpWeight)));
-				mSoftRenderer->PutPixel(tempLoc.X, tempLoc.Y);
+				mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(tempLoc.X, tempLoc.Y));
 				mGDIHelper->SetColor(static_cast<ULONG>(currentColor * UpWeight));
-				mSoftRenderer->PutPixel(tempLoc.X + 1, tempLoc.Y);
+				mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(tempLoc.X + 1.0f, tempLoc.Y));
 				mGDIHelper->SetColor(static_cast<ULONG>(currentColor));
 			}
 			else
 			{
 				ULONG currentColor = mGDIHelper->GetCurrentColor();
 				mGDIHelper->SetColor(static_cast<ULONG>(currentColor * (1.0f - UpWeight)));
-				mSoftRenderer->PutPixel(tempLoc.X, tempLoc.Y);
+				mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(tempLoc.X, tempLoc.Y));
 				mGDIHelper->SetColor(static_cast<ULONG>(currentColor * UpWeight));
-				mSoftRenderer->PutPixel(tempLoc.X, tempLoc.Y + 1);
+				mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(tempLoc.X, tempLoc.Y + 1.0f));
 				mGDIHelper->SetColor(static_cast<ULONG>(currentColor));
 			}
 		}
 		else
 		{
-			mSoftRenderer->PutPixel(tempLoc.X, tempLoc.Y);
+			mSoftRenderer->PutPixel(RenderMath::Vector2toIntPoint2D(tempLoc));
 		}
 	}
 
 	return;
 }
 
-void Draw2DManager::GetYLocation(int width, int height, int inX, int* outY)
+void Draw2DManager::GetYLocation(float width, float height, float inX, float* outY)
 {
 	// 정수 연산을 사용하는 기존의 수식 (안티 앨리어싱이 힘듬)
 	if (width * (*outY) + -height * inX > 0)
@@ -160,10 +170,10 @@ void Draw2DManager::GetYLocation(int width, int height, int inX, int* outY)
 	return;
 }
 
-void Draw2DManager::GetYLocationf(int width, int height, int inX, int* outY, float* upWeight)
+void Draw2DManager::GetYLocationf(float width, float height, float inX, float* outY, float* upWeight)
 {
 	// 부동소수점 연산을 사용하는 새로운 수식 (안티 앨리어싱 쉬움, 퍼포먼스 떨어짐)
-	float inclination = static_cast<float>(height) / static_cast<float>(width);
+	float inclination = height / width;
 
 	float downWeight = inclination * inX - *outY;
 	*upWeight = (*outY + 1) - inclination * inX;
@@ -259,7 +269,7 @@ void Draw2DManager::DrawBottomTriangle(Vertex point1, Vertex point2, Vertex poin
 	float StartPosX = point1.position.X;
 	float EndPosX = point1.position.X;
 
-	for (int ScanLineY = point1.position.Y; ScanLineY >= point2.position.Y; --ScanLineY)
+	for (int ScanLineY = (int)point1.position.Y; ScanLineY >= point2.position.Y; --ScanLineY)
 	{
 		Vertex TempVertex1;
 		Vertex TempVertex2;
@@ -289,7 +299,7 @@ void Draw2DManager::DrawTopTriangle(Vertex point1, Vertex point2, Vertex point3)
 	float StartPosX = point3.position.X;
 	float EndPosX = point3.position.X;
 
-	for (int ScanLineY = point3.position.Y; ScanLineY <= point1.position.Y; ++ScanLineY)
+	for (int ScanLineY = (int)point3.position.Y; ScanLineY <= point1.position.Y; ++ScanLineY)
 	{
 		Vertex TempVertex1;
 		Vertex TempVertex2;
@@ -313,19 +323,38 @@ void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
 		return;
 	}
 
-	for (int i = point1.position.X; i <= point2.position.X; ++i)
+	for (int i = (int)point1.position.X; i <= point2.position.X; ++i)
 	{
-		Vector2 currentPoint = { i, point1.position.Y };
+		if (useTexture == true)
+		{
+			Vector2 currentPoint = RenderMath::Vector2Set(i, point1.position.Y);
 
-		Vector3 vertexWeight = mTriangleList[mCurrentVertexCount].GetVertexWeight(currentPoint);
-		ColorRGB currentColor = 
-			mTriangleList[mCurrentVertexCount].point1.Color * vertexWeight.X +
-			mTriangleList[mCurrentVertexCount].point2.Color * vertexWeight.Y +
-			mTriangleList[mCurrentVertexCount].point3.Color * vertexWeight.Z;
+			Vector3 vertexWeight = mTriangleList[mCurrentVertexCount].GetVertexWeight(currentPoint);
 
-		mGDIHelper->SetColor(currentColor);
+			Vector2 currentUV = 
+				mTriangleList[mCurrentVertexCount].point1.UV * vertexWeight.X +
+				mTriangleList[mCurrentVertexCount].point2.UV * vertexWeight.Y +
+				mTriangleList[mCurrentVertexCount].point3.UV * vertexWeight.Z;
+			ColorRGB currentColor = mTextureHelper->GetPixelUV(currentUV);
 
-		mSoftRenderer->PutPixel(i, point1.position.Y);
+			mGDIHelper->SetColor(currentColor);
+
+			mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(i, point1.position.Y));
+		}
+		else
+		{
+			Vector2 currentPoint = RenderMath::Vector2Set(i, point1.position.Y);
+
+			Vector3 vertexWeight = mTriangleList[mCurrentVertexCount].GetVertexWeight(currentPoint);
+			ColorRGB currentColor =
+				mTriangleList[mCurrentVertexCount].point1.Color * vertexWeight.X +
+				mTriangleList[mCurrentVertexCount].point2.Color * vertexWeight.Y +
+				mTriangleList[mCurrentVertexCount].point3.Color * vertexWeight.Z;
+
+			mGDIHelper->SetColor(currentColor);
+
+			mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(i, point1.position.Y));
+		}
 	}
 
 }

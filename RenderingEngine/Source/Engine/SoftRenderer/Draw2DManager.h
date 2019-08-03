@@ -10,7 +10,7 @@ public:
 	Draw2DManager();
 	~Draw2DManager();
 
-	bool Initialize(class SoftRenderer* initSoftRenderer, class GDIHelper* initGDIHelper);
+	bool Initialize(class SoftRenderer* initSoftRenderer, class GDIHelper* initGDIHelper, const char* filename);
 	void DrawLine(struct Vector2 startLoc, struct Vector2 endLoc, struct ColorRGB rgb, bool useAntiAlise);
 	bool SetTriangle(class TriangleClass* vertices, int vertexCount);
 	void ClearTriangle();
@@ -19,8 +19,8 @@ public:
 
 private:
 
-	void GetYLocation(int width, int height, int inX, int* outY);
-	void GetYLocationf(int width, int height, int inX, int* outY, float* UpWeight);
+	void GetYLocation(float width, float height, float inX, float* outY);
+	void GetYLocationf(float width, float height, float inX, float* outY, float* UpWeight);
 	void DrawTopTriangle(struct Vertex point1, struct Vertex point2, struct Vertex point3);
 	void DrawBottomTriangle(struct Vertex point1, struct Vertex point2, struct Vertex point3);
 	void DrawFlatLine(struct Vertex point1, struct Vertex point2);
@@ -30,7 +30,9 @@ private:
 	class SoftRenderer* mSoftRenderer;
 	class GDIHelper* mGDIHelper;
 	class TriangleClass* mTriangleList;
+	class TextureHelper* mTextureHelper;
 	int mVertexCount;
 	int mCurrentVertexCount;
+	bool useTexture;
 
 };

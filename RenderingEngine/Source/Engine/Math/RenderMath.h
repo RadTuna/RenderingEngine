@@ -10,6 +10,8 @@ struct Vector2
 
 	Vector2 operator+(const Vector2& Other) const;
 	Vector2 operator-(const Vector2& Other) const;
+	Vector2 operator*(const Vector2& Other) const;
+	Vector2 operator*(const float& Other) const;
 };
 
 struct Vector3
@@ -66,23 +68,33 @@ public:
 
 	static Vector2 VectorSum(Vector2 inVector1, Vector2 inVector2);
 	static Vector2 VectorSub(Vector2 inVector1, Vector2 inVector2);
-	static Vector2 Vector2Set(float x, float y);
-	static Vector3 Vector3Set(float x, float y, float z);
 	static float GetVectorLength(Vector2 inVector);
 	static float GetTriangleArea(float length1, float length2, float angle);
 	static float DotProduct(Vector2 inVector1, Vector2 inVector2);
 	static Vector2 Normalize(Vector2 inVector);
+	static IntPoint2D Vector2toIntPoint2D(Vector2& inVector);
 
 	static void SortVecticesByY(class TriangleClass* Vertices);
 
 	static ColorRGB ColorRGBSet(BYTE inRed, BYTE inGreen, BYTE inBlue);
 
+public:
+
 	template <typename T>
 	static T Clamp(T targetVal, T minVal, T maxVal);
 
+	template<typename T, typename U>
+	static IntPoint2D IntFloat2toIntPoint2D(T x, U y);
+
+	template<typename T, typename U>
+	static Vector2 Vector2Set(T x, U y);
+
+	template<typename T, typename U, typename V>
+	static Vector3 Vector3Set(T x, U y, V z);
+
 };
 
-template <typename T>
+template<typename T>
 T RenderMath::Clamp(T targetVal, T minVal, T maxVal)
 {
 	if (targetVal > maxVal)
@@ -95,4 +107,32 @@ T RenderMath::Clamp(T targetVal, T minVal, T maxVal)
 	}
 
 	return targetVal;
+}
+
+template<typename T, typename U>
+IntPoint2D RenderMath::IntFloat2toIntPoint2D(T x, U y)
+{
+	IntPoint2D temp;
+	temp.X = static_cast<int>(x);
+	temp.Y = static_cast<int>(y);
+	return temp;
+}
+
+template<typename T, typename U>
+Vector2 RenderMath::Vector2Set(T x, U y)
+{
+	Vector2 temp;
+	temp.X = static_cast<float>(x);
+	temp.Y = static_cast<float>(y);
+	return temp;
+}
+
+template<typename T, typename U, typename V>
+Vector3 RenderMath::Vector3Set(T x, U y, V z)
+{
+	Vector3 temp;
+	temp.X = static_cast<float>(x);
+	temp.Y = static_cast<float>(y);
+	temp.Z = static_cast<float>(z);
+	return temp;
 }

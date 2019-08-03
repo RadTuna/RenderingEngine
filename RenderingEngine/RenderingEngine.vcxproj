@@ -26,6 +26,7 @@
     <ClInclude Include="Source\Engine\SoftRenderer\Draw2DManager.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\GDIHelper.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\SoftRenderer.h" />
+    <ClInclude Include="Source\Engine\SoftRenderer\TextureHelper.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\TriangleClass.h" />
     <ClInclude Include="Source\Engine\WinMain\Win32Application.h" />
   </ItemGroup>
@@ -34,6 +35,7 @@
     <ClCompile Include="Source\Engine\SoftRenderer\Draw2DManager.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\GDIHelper.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\SoftRenderer.cpp" />
+    <ClCompile Include="Source\Engine\SoftRenderer\TextureHelper.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\TriangleClass.cpp" />
     <ClCompile Include="Source\Engine\WinMain\Win32Application.cpp" />
     <ClCompile Include="Source\Engine\WinMain\WinMain.cpp" />

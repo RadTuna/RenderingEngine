@@ -8,6 +8,7 @@ struct Vertex
 {
 	Vector2 position;
 	ColorRGB Color;
+	Vector2 UV;
 };
 
 class TriangleClass

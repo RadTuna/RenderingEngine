@@ -15,6 +15,7 @@ public:
 	void UpdateFrame(void);
 	bool IsInRange(int x, int y);
 	void PutPixel(int x, int y);
+	void PutPixel(struct IntPoint2D inPoint);
 
 private:
 

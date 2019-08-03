@@ -30,7 +30,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 		return false;
 	}
 
-	Result = mDraw2DManager->Initialize(this, mGDIHelper);
+	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/stone.bmp");
 	if (Result == false)
 	{
 		return false;
@@ -46,11 +46,16 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 	}
 
 	vertices[0].point1.position = RenderMath::Vector2Set(0, 100);
-	vertices[0].point1.Color = RenderMath::ColorRGBSet(255, 0, 0);
+	vertices[0].point1.Color = RenderMath::ColorRGBSet(0, 0, 255);
+	vertices[0].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
+
 	vertices[0].point2.position = RenderMath::Vector2Set(-100, -100);
 	vertices[0].point2.Color = RenderMath::ColorRGBSet(0, 255, 0);
+	vertices[0].point2.UV = RenderMath::Vector2Set(0.0f, 1.0f);
+
 	vertices[0].point3.position = RenderMath::Vector2Set(100, -100);
-	vertices[0].point3.Color = RenderMath::ColorRGBSet(0, 0, 255);
+	vertices[0].point3.Color = RenderMath::ColorRGBSet(255, 0, 0);
+	vertices[0].point3.UV = RenderMath::Vector2Set(1.0f, 1.0f);
 
 	Result = mDraw2DManager->SetTriangle(vertices, vertexCount);
 	if (Result == false)
@@ -86,14 +91,20 @@ void SoftRenderer::PutPixel(int x, int y)
 	return;
 }
 
+void SoftRenderer::PutPixel(IntPoint2D inPoint)
+{
+	PutPixel(inPoint.X, inPoint.Y);
+}
+
 void SoftRenderer::UpdateFrame()
 {
-	Vector2 points[3];
+	Vector2 points[4];
 	ColorRGB Color;
 
-	points[0] = { 0, 150 };
-	points[1] = { 135, -120 };
-	points[2] = { -135, -120 };
+	points[0] = { -225, 110 };
+	points[1] = { 225, 110 };
+	points[2] = { -115, -110 };
+	points[3] = { 115, -110 };
 
 	// Buffer Clear
 	mGDIHelper->SetColor(255, 255, 255);
@@ -104,7 +115,8 @@ void SoftRenderer::UpdateFrame()
 
 	// DrawLine
 	mDraw2DManager->DrawLine(points[0], points[1], Color, false);
-	mDraw2DManager->DrawLine(points[1], points[2], Color, false);
+	mDraw2DManager->DrawLine(points[1], points[3], Color, false);
+	mDraw2DManager->DrawLine(points[2], points[3], Color, false);
 	mDraw2DManager->DrawLine(points[2], points[0], Color, false);
 
 	// DrawTriangle

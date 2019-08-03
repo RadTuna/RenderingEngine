@@ -58,10 +58,23 @@ Vector2 RenderMath::Normalize(Vector2 inVector)
 {
 	float vectorLength = RenderMath::GetVectorLength(inVector);
 
+	if (vectorLength <= 0.001f)
+	{
+		return inVector;
+	}
+	
 	inVector.X = inVector.X / vectorLength;
 	inVector.Y = inVector.Y / vectorLength;
 
 	return inVector;
+}
+
+IntPoint2D RenderMath::Vector2toIntPoint2D(Vector2& inVector)
+{
+	IntPoint2D temp;
+	temp.X = static_cast<int>(inVector.X);
+	temp.Y = static_cast<int>(inVector.Y);
+	return temp;
 }
 
 void RenderMath::SortVecticesByY(TriangleClass* vertices)
@@ -78,24 +91,12 @@ void RenderMath::SortVecticesByY(TriangleClass* vertices)
 		}
 	}
 
-	if (!vertices->point2.position.Y < vertices->point3.position.Y)
+	if (vertices->point2.position.Y < vertices->point3.position.Y)
 	{
 		std::swap(vertices->point2, vertices->point3);
 	}
 
 	return;
-}
-
-Vector2 RenderMath::Vector2Set(float x, float y)
-{
-	Vector2 Temp = { x, y };
-	return Temp;
-}
-
-Vector3 RenderMath::Vector3Set(float x, float y, float z)
-{
-	Vector3 Temp = { x, y, z };
-	return Temp;
 }
 
 ColorRGB RenderMath::ColorRGBSet(BYTE inRed, BYTE inGreen, BYTE inBlue)
@@ -119,6 +120,23 @@ Vector2 Vector2::operator-(const Vector2& Other) const
 	Temp.Y = Y - Other.Y;
 	return Temp;
 }
+
+Vector2 Vector2::operator*(const Vector2& Other) const
+{
+	Vector2 Temp;
+	Temp.X = X * Other.X;
+	Temp.Y = Y * Other.Y;
+	return Temp;
+}
+
+Vector2 Vector2::operator*(const float& Other) const
+{
+	Vector2 Temp;
+	Temp.X = X * Other;
+	Temp.Y = Y * Other;
+	return Temp;
+}
+
 
 ColorRGB::ColorRGB()
 {
