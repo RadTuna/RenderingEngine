@@ -27,7 +27,7 @@
     <ClInclude Include="Source\Engine\SoftRenderer\GDIHelper.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\SoftRenderer.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\TextureHelper.h" />
-    <ClInclude Include="Source\Engine\SoftRenderer\TriangleClass.h" />
+    <ClInclude Include="Source\Engine\SoftRenderer\ShapeClass.h" />
     <ClInclude Include="Source\Engine\WinMain\Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
@@ -36,7 +36,7 @@
     <ClCompile Include="Source\Engine\SoftRenderer\GDIHelper.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\SoftRenderer.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\TextureHelper.cpp" />
-    <ClCompile Include="Source\Engine\SoftRenderer\TriangleClass.cpp" />
+    <ClCompile Include="Source\Engine\SoftRenderer\ShapeClass.cpp" />
     <ClCompile Include="Source\Engine\WinMain\Win32Application.cpp" />
     <ClCompile Include="Source\Engine\WinMain\WinMain.cpp" />
   </ItemGroup>

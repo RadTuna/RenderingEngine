@@ -1,6 +1,6 @@
 
 #include "RenderMath.h"
-#include "Engine/SoftRenderer/TriangleClass.h"
+#include "Engine/SoftRenderer/ShapeClass.h"
 
 
 void RenderMath::MatrixMul(Matrix2x2* outMat, Matrix2x2 inMat)
@@ -77,7 +77,7 @@ IntPoint2D RenderMath::Vector2toIntPoint2D(Vector2& inVector)
 	return temp;
 }
 
-void RenderMath::SortVecticesByY(TriangleClass* vertices)
+void RenderMath::SortVecticesByY(Triangle* vertices)
 {
 	if (!(vertices->point1.position.Y >= vertices->point2.position.Y) && (vertices->point1.position.Y >= vertices->point3.position.Y))
 	{
@@ -94,6 +94,13 @@ void RenderMath::SortVecticesByY(TriangleClass* vertices)
 	if (vertices->point2.position.Y < vertices->point3.position.Y)
 	{
 		std::swap(vertices->point2, vertices->point3);
+	}
+	else if (vertices->point2.position.Y == vertices->point3.position.Y)
+	{
+		if (vertices->point2.position.X > vertices->point3.position.X)
+		{
+			std::swap(vertices->point2, vertices->point3);
+		}
 	}
 
 	return;

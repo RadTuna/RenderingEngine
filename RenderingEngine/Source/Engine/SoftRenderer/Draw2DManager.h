@@ -12,10 +12,11 @@ public:
 
 	bool Initialize(class SoftRenderer* initSoftRenderer, class GDIHelper* initGDIHelper, const char* filename);
 	void DrawLine(struct Vector2 startLoc, struct Vector2 endLoc, struct ColorRGB rgb, bool useAntiAlise);
-	bool SetTriangle(class TriangleClass* vertices, int vertexCount);
+	bool SetTriangle(struct Triangle* vertices, int vertexCount);
+	bool SetQuad(struct Quad* vertices, int vertexCount);
 	void ClearTriangle();
 	void DrawTriangleList();
-	void DrawTriangle(class TriangleClass vertices);
+	void DrawTriangle(struct Triangle& vertices);
 
 private:
 
@@ -29,7 +30,7 @@ private:
 
 	class SoftRenderer* mSoftRenderer;
 	class GDIHelper* mGDIHelper;
-	class TriangleClass* mTriangleList;
+	struct Triangle* mTriangleList;
 	class TextureHelper* mTextureHelper;
 	int mVertexCount;
 	int mCurrentVertexCount;

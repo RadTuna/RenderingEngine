@@ -3,7 +3,7 @@
 #include "Engine/SoftRenderer/GDIHelper.h"
 #include "Engine/SoftRenderer/SoftRenderer.h"
 #include "Engine/Math/RenderMath.h"
-#include "Engine/SoftRenderer/TriangleClass.h"
+#include "Engine/SoftRenderer/ShapeClass.h"
 #include "Engine/SoftRenderer/TextureHelper.h"
 
 
@@ -96,7 +96,7 @@ void Draw2DManager::DrawLine(Vector2 startLoc, Vector2 endLoc, ColorRGB rgb, boo
 			}
 		}
 
-		Vector2 tempLoc = { (float)x, yCoord };
+		Vector2 tempLoc = RenderMath::Vector2Set(x, yCoord);
 
 		if (inclination >= 1) // 기울기 1 초과
 		{
@@ -187,10 +187,10 @@ void Draw2DManager::GetYLocationf(float width, float height, float inX, float* o
 	return;
 }
 
-bool Draw2DManager::SetTriangle(TriangleClass* vertices, int vertexCount)
+bool Draw2DManager::SetTriangle(Triangle* vertices, int vertexCount)
 {
 
-	mTriangleList = new class TriangleClass[vertexCount];
+	mTriangleList = new Triangle[vertexCount];
 	if (mTriangleList == nullptr)
 	{
 		return false;
@@ -201,6 +201,25 @@ bool Draw2DManager::SetTriangle(TriangleClass* vertices, int vertexCount)
 	for (int i = 0; i < mVertexCount; ++i)
 	{
 		mTriangleList[i] = vertices[i];
+	}
+
+	return true;
+}
+
+bool Draw2DManager::SetQuad(Quad* vertices, int vertexCount)
+{
+	mTriangleList = new Triangle[vertexCount];
+	if (mTriangleList == nullptr)
+	{
+		return false;
+	}
+
+	mVertexCount = vertexCount;
+
+	for (int i = 0; i < mVertexCount; i += 2)
+	{
+		mTriangleList[i] = vertices[i / 2].triangle1;
+		mTriangleList[i + 1] = vertices[i / 2].triangle2;
 	}
 
 	return true;
@@ -229,7 +248,7 @@ void Draw2DManager::DrawTriangleList()
 	}
 }
 
-void Draw2DManager::DrawTriangle(TriangleClass vertices)
+void Draw2DManager::DrawTriangle(Triangle& vertices)
 {
 
 	// 버텍스를 Y값 순으로 정렬함.

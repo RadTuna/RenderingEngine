@@ -3,7 +3,7 @@
 #include "Engine/Math/RenderMath.h"
 #include "Engine/SoftRenderer/GDIHelper.h"
 #include "Engine/SoftRenderer/Draw2DManager.h"
-#include "Engine/SoftRenderer/TriangleClass.h"
+#include "Engine/SoftRenderer/ShapeClass.h"
 
 
 SoftRenderer::SoftRenderer()
@@ -15,7 +15,8 @@ SoftRenderer::SoftRenderer()
 bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 {
 	bool Result;
-	TriangleClass* vertices;
+	//Triangle* vertices;
+	Quad* vertices;
 
 	if (initGDIHelper == nullptr)
 	{
@@ -36,10 +37,11 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 		return false;
 	}
 
+	/*
 	// 트라이앵글리스트를 DrawManager에 등록
-	int vertexCount = 1;
+	int vertexCount = 2;
 
-	vertices = new TriangleClass[vertexCount];
+	vertices = new Triangle[vertexCount];
 	if (vertices == nullptr)
 	{
 		return false;
@@ -58,6 +60,40 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 	vertices[0].point3.UV = RenderMath::Vector2Set(1.0f, 1.0f);
 
 	Result = mDraw2DManager->SetTriangle(vertices, vertexCount);
+	if (Result == false)
+	{
+		return false;
+	}
+	*/
+
+	int vertexCount = 2;
+
+	vertices = new Quad[vertexCount / 2];
+	if (vertices == nullptr)
+	{
+		return false;
+	}
+
+	Vertex quadVertices[4];
+	quadVertices[0].position = RenderMath::Vector2Set(-100, 100);
+	quadVertices[0].Color = RenderMath::ColorRGBSet(255, 0, 0);
+	quadVertices[0].UV = RenderMath::Vector2Set(0.0f, 0.0f);
+
+	quadVertices[1].position = RenderMath::Vector2Set(100, 100);
+	quadVertices[1].Color = RenderMath::ColorRGBSet(255, 0, 0);
+	quadVertices[1].UV = RenderMath::Vector2Set(1.0f, 0.0f);
+
+	quadVertices[2].position = RenderMath::Vector2Set(100, -100);
+	quadVertices[2].Color = RenderMath::ColorRGBSet(255, 0, 0);
+	quadVertices[2].UV = RenderMath::Vector2Set(1.0f, 1.0f);
+
+	quadVertices[3].position = RenderMath::Vector2Set(-100, -100);
+	quadVertices[3].Color = RenderMath::ColorRGBSet(255, 0, 0);
+	quadVertices[3].UV = RenderMath::Vector2Set(0.0f, 1.0f);
+
+	vertices[0].SetQuad(quadVertices[0], quadVertices[1], quadVertices[2], quadVertices[3]);
+
+	Result = mDraw2DManager->SetQuad(vertices, vertexCount);
 	if (Result == false)
 	{
 		return false;
@@ -101,10 +137,10 @@ void SoftRenderer::UpdateFrame()
 	Vector2 points[4];
 	ColorRGB Color;
 
-	points[0] = { -225, 110 };
-	points[1] = { 225, 110 };
-	points[2] = { -115, -110 };
-	points[3] = { 115, -110 };
+	points[0] = RenderMath::Vector2Set(-225, 110);
+	points[1] = RenderMath::Vector2Set(225, 110);
+	points[2] = RenderMath::Vector2Set(-115, -110);
+	points[3] = RenderMath::Vector2Set(115, -110);
 
 	// Buffer Clear
 	mGDIHelper->SetColor(255, 255, 255);

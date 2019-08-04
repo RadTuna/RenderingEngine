@@ -74,7 +74,7 @@ public:
 	static Vector2 Normalize(Vector2 inVector);
 	static IntPoint2D Vector2toIntPoint2D(Vector2& inVector);
 
-	static void SortVecticesByY(class TriangleClass* Vertices);
+	static void SortVecticesByY(struct Triangle* Vertices);
 
 	static ColorRGB ColorRGBSet(BYTE inRed, BYTE inGreen, BYTE inBlue);
 

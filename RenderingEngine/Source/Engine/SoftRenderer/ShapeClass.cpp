@@ -1,16 +1,11 @@
 
-#include "TriangleClass.h"
+#include "Engine/SoftRenderer/ShapeClass.h"
 
-
-TriangleClass::TriangleClass()
+ShapeClass::ShapeClass()
 {
 }
 
-TriangleClass::~TriangleClass()
-{
-}
-
-Vector3 TriangleClass::GetVertexWeight(Vector2& inPoint)
+Vector3 Triangle::GetVertexWeight(Vector2& inPoint)
 {
 	Vector3 Result;
 
@@ -37,4 +32,17 @@ Vector3 TriangleClass::GetVertexWeight(Vector2& inPoint)
 	Result.Z = point3Weight / TotalArea;
 
 	return Result;
+}
+
+void Quad::SetQuad(Vertex& point1, Vertex& point2, Vertex& point3, Vertex& point4)
+{
+	triangle1.point1 = point1;
+	triangle1.point2 = point2;
+	triangle1.point3 = point4;
+
+	triangle2.point1 = point2;
+	triangle2.point2 = point3;
+	triangle2.point3 = point4;
+
+	return;
 }
