@@ -21,7 +21,7 @@ void RenderMath::MatrixMul(Vector2* outVector, Matrix2x2 inMat)
 	outVector->Y = tempVec.X * inMat.mat21 + tempVec.Y * inMat.mat22;
 }
 
-Vector2 RenderMath::VectorSum(Vector2 inVector1, Vector2 inVector2)
+Vector2 RenderMath::VectorSum(Vector2& inVector1, Vector2& inVector2)
 {
 	Vector2 outVector;
 	outVector.X = inVector1.X + inVector2.X;
@@ -30,7 +30,7 @@ Vector2 RenderMath::VectorSum(Vector2 inVector1, Vector2 inVector2)
 	return outVector;
 }
 
-Vector2 RenderMath::VectorSub(Vector2 inVector1, Vector2 inVector2)
+Vector2 RenderMath::VectorSub(Vector2& inVector1, Vector2& inVector2)
 {
 	Vector2 outVector;
 	outVector.X = inVector1.X - inVector2.X;
@@ -39,22 +39,22 @@ Vector2 RenderMath::VectorSub(Vector2 inVector1, Vector2 inVector2)
 	return outVector;
 }
 
-float RenderMath::GetVectorLength(Vector2 inVector)
+float RenderMath::GetVectorLength(Vector2& inVector)
 {
 	return std::sqrtf(std::powf(inVector.X, 2) + std::powf(inVector.Y, 2));
 }
 
-float RenderMath::GetTriangleArea(float length1, float length2, float angle)
+float RenderMath::GetTriangleArea(float& length1, float& length2, float& angle)
 {
 	return length1 * length2 * 0.5f * std::sinf(angle);
 }
 
-float RenderMath::DotProduct(Vector2 inVector1, Vector2 inVector2)
+float RenderMath::DotProduct(Vector2& inVector1, Vector2& inVector2)
 {
 	return inVector1.X * inVector2.X + inVector1.Y * inVector2.Y;
 }
 
-Vector2 RenderMath::Normalize(Vector2 inVector)
+Vector2 RenderMath::Normalize(Vector2& inVector)
 {
 	float vectorLength = RenderMath::GetVectorLength(inVector);
 

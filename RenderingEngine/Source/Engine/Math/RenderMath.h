@@ -66,12 +66,12 @@ public:
 	static void MatrixMul(Matrix2x2* outMat, Matrix2x2 inMat);
 	static void MatrixMul(Vector2* outVector, Matrix2x2 inMat);
 
-	static Vector2 VectorSum(Vector2 inVector1, Vector2 inVector2);
-	static Vector2 VectorSub(Vector2 inVector1, Vector2 inVector2);
-	static float GetVectorLength(Vector2 inVector);
-	static float GetTriangleArea(float length1, float length2, float angle);
-	static float DotProduct(Vector2 inVector1, Vector2 inVector2);
-	static Vector2 Normalize(Vector2 inVector);
+	static Vector2 VectorSum(Vector2& inVector1, Vector2& inVector2);
+	static Vector2 VectorSub(Vector2& inVector1, Vector2& inVector2);
+	static float GetVectorLength(Vector2& inVector);
+	static float GetTriangleArea(float& length1, float& length2, float& angle);
+	static float DotProduct(Vector2& inVector1, Vector2& inVector2);
+	static Vector2 Normalize(Vector2& inVector);
 	static IntPoint2D Vector2toIntPoint2D(Vector2& inVector);
 
 	static void SortVecticesByY(struct Triangle* Vertices);

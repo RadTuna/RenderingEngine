@@ -12,11 +12,11 @@ SoftRenderer::SoftRenderer()
 	mDraw2DManager = nullptr;
 }
 
-bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
+bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 {
 	bool Result;
-	//Triangle* vertices;
-	Quad* vertices;
+	Triangle* vertices;
+	//Quad* vertices;
 
 	if (initGDIHelper == nullptr)
 	{
@@ -25,19 +25,28 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 
 	mGDIHelper = initGDIHelper;
 
+	if (hWnd == nullptr)
+	{
+		return false;
+	}
+
+	mhWnd = hWnd;
+
+	
+
 	mDraw2DManager = new class Draw2DManager;
 	if (mDraw2DManager == nullptr)
 	{
 		return false;
 	}
 
-	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/stone.bmp");
+	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/stone.bm");
 	if (Result == false)
 	{
 		return false;
 	}
 
-	/*
+	
 	// 트라이앵글리스트를 DrawManager에 등록
 	int vertexCount = 2;
 
@@ -48,7 +57,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 	}
 
 	vertices[0].point1.position = RenderMath::Vector2Set(0, 100);
-	vertices[0].point1.Color = RenderMath::ColorRGBSet(0, 0, 255);
+	vertices[0].point1.Color = RenderMath::ColorRGBSet(255, 0, 0);
 	vertices[0].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
 
 	vertices[0].point2.position = RenderMath::Vector2Set(-100, -100);
@@ -56,7 +65,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 	vertices[0].point2.UV = RenderMath::Vector2Set(0.0f, 1.0f);
 
 	vertices[0].point3.position = RenderMath::Vector2Set(100, -100);
-	vertices[0].point3.Color = RenderMath::ColorRGBSet(255, 0, 0);
+	vertices[0].point3.Color = RenderMath::ColorRGBSet(0, 0, 255);
 	vertices[0].point3.UV = RenderMath::Vector2Set(1.0f, 1.0f);
 
 	Result = mDraw2DManager->SetTriangle(vertices, vertexCount);
@@ -64,8 +73,9 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 	{
 		return false;
 	}
-	*/
+	
 
+	/*
 	int vertexCount = 2;
 
 	vertices = new Quad[vertexCount / 2];
@@ -98,6 +108,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper)
 	{
 		return false;
 	}
+	*/
 
 	// Manager에 등록이 끝났으므로 할당해제.
 	delete[] vertices;

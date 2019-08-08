@@ -250,9 +250,10 @@ void Draw2DManager::DrawTriangleList()
 
 void Draw2DManager::DrawTriangle(Triangle& vertices)
 {
-
 	// 버텍스를 Y값 순으로 정렬함.
 	RenderMath::SortVecticesByY(&vertices);
+
+	vertices.Initialize();
 
 	if (vertices.point2.position.Y == vertices.point3.position.Y)
 	{
@@ -341,7 +342,7 @@ void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
 	{
 		return;
 	}
-
+	
 	for (int i = (int)point1.position.X; i <= point2.position.X; ++i)
 	{
 		if (useTexture == true)

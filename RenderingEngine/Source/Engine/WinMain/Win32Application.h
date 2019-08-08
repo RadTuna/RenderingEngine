@@ -19,12 +19,13 @@ public:
 
 	LRESULT CALLBACK MessageHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-//private:
+private:
 	
 	HWND m_hwnd;
 	HINSTANCE m_hInstance;
 	class GDIHelper* mGDIHelper;
 	class SoftRenderer* mSoftRenderer;
+	class FPSCounter* mFPSCounter;
 
 public:
 

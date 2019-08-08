@@ -5,31 +5,28 @@ ShapeClass::ShapeClass()
 {
 }
 
+void Triangle::Initialize()
+{
+	mVectorU = point2.position - point1.position;
+	mVectorV = point3.position - point1.position;
+
+	mDotUU = RenderMath::DotProduct(mVectorU, mVectorU);
+	mDotUV = RenderMath::DotProduct(mVectorU, mVectorV);
+
+	mWeightDenominator = mDotUU * RenderMath::DotProduct(mVectorV, mVectorV) - mDotUV * mDotUV;
+}
+
 Vector3 Triangle::GetVertexWeight(Vector2& inPoint)
 {
 	Vector3 Result;
 
-	float TotalArea = RenderMath::GetTriangleArea(
-		RenderMath::GetVectorLength(point2.position - point1.position),
-		RenderMath::GetVectorLength(point3.position - point1.position),
-		std::acosf(RenderMath::Clamp<float>(RenderMath::DotProduct(RenderMath::Normalize(point2.position - point1.position), RenderMath::Normalize(point3.position - point1.position)), -1.0f, 1.0f)));
-	
-	float point1Weight = RenderMath::GetTriangleArea(
-		RenderMath::GetVectorLength(point2.position - inPoint),
-		RenderMath::GetVectorLength(point3.position - inPoint),
-		std::acosf(RenderMath::Clamp<float>(RenderMath::DotProduct(RenderMath::Normalize(point2.position - inPoint), RenderMath::Normalize(point3.position - inPoint)), -1.0f, 1.0f)));
-	float point2Weight = RenderMath::GetTriangleArea(
-		RenderMath::GetVectorLength(point1.position - inPoint),
-		RenderMath::GetVectorLength(point3.position - inPoint),
-		std::acosf(RenderMath::Clamp<float>(RenderMath::DotProduct(RenderMath::Normalize(point1.position - inPoint), RenderMath::Normalize(point3.position - inPoint)), -1.0f, 1.0f)));
-	float point3Weight = RenderMath::GetTriangleArea(
-		RenderMath::GetVectorLength(point1.position - inPoint),
-		RenderMath::GetVectorLength(point2.position - inPoint),
-		std::acosf(RenderMath::Clamp<float>(RenderMath::DotProduct(RenderMath::Normalize(point1.position - inPoint), RenderMath::Normalize(point2.position - inPoint)), -1.0f, 1.0f)));
+	mVectorW = inPoint - point1.position;
 
-	Result.X = point1Weight / TotalArea;
-	Result.Y = point2Weight / TotalArea;
-	Result.Z = point3Weight / TotalArea;
+	Result.Y = (RenderMath::DotProduct(mVectorW, mVectorU) * RenderMath::DotProduct(mVectorV, mVectorV)
+		- RenderMath::DotProduct(mVectorW, mVectorV) * RenderMath::DotProduct(mVectorV, mVectorU)) / mWeightDenominator;
+	Result.Z = (RenderMath::DotProduct(mVectorW, mVectorV) * RenderMath::DotProduct(mVectorU, mVectorU)
+		- RenderMath::DotProduct(mVectorW, mVectorU) * RenderMath::DotProduct(mVectorV, mVectorU)) / mWeightDenominator;
+	Result.X = 1.0f - Result.Y - Result.Z;
 
 	return Result;
 }

@@ -10,7 +10,7 @@ public:
 	SoftRenderer();
 	~SoftRenderer() = default;
 
-	bool Initialize(class GDIHelper* initGDIHelper);
+	bool Initialize(class GDIHelper* initGDIHelper, HWND* hWnd);
 	void Release();
 	void UpdateFrame(void);
 	bool IsInRange(int x, int y);
@@ -23,5 +23,6 @@ private:
 
 	class GDIHelper* mGDIHelper;
 	class Draw2DManager* mDraw2DManager;
+	HWND* mhWnd;
 
 };

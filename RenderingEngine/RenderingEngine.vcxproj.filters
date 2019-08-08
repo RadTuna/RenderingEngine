@@ -22,6 +22,9 @@
     <Filter Include="Engine\Math">
       <UniqueIdentifier>{680d494b-cdac-4fa4-8fd1-ced475544a6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Profiler">
+      <UniqueIdentifier>{ad2e8991-8e0d-4cb0-bcbb-f54cbbe65965}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Engine\WinMain\Win32Application.h">
@@ -54,6 +57,9 @@
     <ClInclude Include="Source\Engine\SoftRenderer\ShapeClass.h">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Profiler\FPSCounter.h">
+      <Filter>Engine\Profiler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\WinMain\Win32Application.cpp">
@@ -79,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\SoftRenderer\ShapeClass.cpp">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Profiler\FPSCounter.cpp">
+      <Filter>Engine\Profiler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

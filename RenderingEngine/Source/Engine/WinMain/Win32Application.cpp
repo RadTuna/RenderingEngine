@@ -3,6 +3,7 @@
 #include "Win32Application.h"
 #include "Engine/SoftRenderer/GDIHelper.h"
 #include "Engine/SoftRenderer/SoftRenderer.h"
+#include "Engine/Profiler/FPSCounter.h"
 
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -28,6 +29,12 @@ Win32Application::~Win32Application()
 	{
 		delete mGDIHelper;
 		mGDIHelper = nullptr;
+	}
+
+	if (mFPSCounter != nullptr)
+	{
+		delete mFPSCounter;
+		mFPSCounter = nullptr;
 	}
 }
 
@@ -101,7 +108,15 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 		return 0;
 	}
 
-	mSoftRenderer->Initialize(mGDIHelper);
+	mSoftRenderer->Initialize(mGDIHelper, &m_hwnd);
+
+	mFPSCounter = new FPSCounter;
+	if (mFPSCounter == nullptr)
+	{
+		return 0;
+	}
+
+	mFPSCounter->Initialize();
 	
 
 	while (msg.message != WM_QUIT)
@@ -115,7 +130,15 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 		else if (bIsActive)
 		{
 			// SomWorks :D // SoftRender 메인 업데이트
+			WCHAR titleString[100];
+
+			mFPSCounter->Frame();
+
 			mSoftRenderer->UpdateFrame();
+
+			swprintf_s(titleString, 100, L"%s  /  FPS: %d", SomTitle, mFPSCounter->GetFPS());
+
+			SetWindowTextW(m_hwnd, titleString);
 		}
 		else
 		{
@@ -184,6 +207,9 @@ LRESULT CALLBACK Win32Application::MessageHandler(HWND hWnd, UINT message, WPARA
 
 		delete mSoftRenderer;
 		mSoftRenderer = nullptr;
+
+		delete mFPSCounter;
+		mFPSCounter = nullptr;
 
 		break;
 

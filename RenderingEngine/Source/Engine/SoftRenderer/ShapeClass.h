@@ -20,7 +20,18 @@ struct Triangle
 
 public:
 
+	void Initialize();
+
 	Vector3 GetVertexWeight(Vector2& inPoint);
+
+private:
+
+	Vector2 mVectorU;
+	Vector2 mVectorV;
+	Vector2 mVectorW;
+	float mWeightDenominator;
+	float mDotUV;
+	float mDotUU;
 
 };
 
