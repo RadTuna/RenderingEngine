@@ -23,7 +23,7 @@ public:
 	void Release();
 
 	bool LoadBmp(const char* filename);
-	ColorRGB GetPixelUV(Vector2 uv);
+	ColorRGB GetPixelUV(Vector2& uv);
 	ColorRGB GetPixel(int x, int y);
 
 private:

@@ -40,7 +40,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 		return false;
 	}
 
-	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/stone.bm");
+	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/stone.bmp");
 	if (Result == false)
 	{
 		return false;
@@ -48,7 +48,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 
 	
 	// 트라이앵글리스트를 DrawManager에 등록
-	int vertexCount = 2;
+	int vertexCount = 1;
 
 	vertices = new Triangle[vertexCount];
 	if (vertices == nullptr)
@@ -56,15 +56,15 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 		return false;
 	}
 
-	vertices[0].point1.position = RenderMath::Vector2Set(0, 100);
+	vertices[0].point1.position = RenderMath::Vector3Set(0, 100, 1);
 	vertices[0].point1.Color = RenderMath::ColorRGBSet(255, 0, 0);
 	vertices[0].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
 
-	vertices[0].point2.position = RenderMath::Vector2Set(-100, -100);
+	vertices[0].point2.position = RenderMath::Vector3Set(-100, -100, 1);
 	vertices[0].point2.Color = RenderMath::ColorRGBSet(0, 255, 0);
 	vertices[0].point2.UV = RenderMath::Vector2Set(0.0f, 1.0f);
 
-	vertices[0].point3.position = RenderMath::Vector2Set(100, -100);
+	vertices[0].point3.position = RenderMath::Vector3Set(100, -100, 1);
 	vertices[0].point3.Color = RenderMath::ColorRGBSet(0, 0, 255);
 	vertices[0].point3.UV = RenderMath::Vector2Set(1.0f, 1.0f);
 
@@ -145,13 +145,17 @@ void SoftRenderer::PutPixel(IntPoint2D inPoint)
 
 void SoftRenderer::UpdateFrame()
 {
-	Vector2 points[4];
+	Vector3 points[4];
+	Matrix3x3 transformMatrix;
+	Vector3 location;
+	Vector3 scale;
+	float rotation;
 	ColorRGB Color;
 
-	points[0] = RenderMath::Vector2Set(-225, 110);
-	points[1] = RenderMath::Vector2Set(225, 110);
-	points[2] = RenderMath::Vector2Set(-115, -110);
-	points[3] = RenderMath::Vector2Set(115, -110);
+	points[0] = RenderMath::Vector3Set(-225, 110, 1);
+	points[1] = RenderMath::Vector3Set(225, 110, 1);
+	points[2] = RenderMath::Vector3Set(-115, -110, 1);
+	points[3] = RenderMath::Vector3Set(115, -110, 1);
 
 	// Buffer Clear
 	mGDIHelper->SetColor(255, 255, 255);
@@ -165,6 +169,13 @@ void SoftRenderer::UpdateFrame()
 	mDraw2DManager->DrawLine(points[1], points[3], Color, false);
 	mDraw2DManager->DrawLine(points[2], points[3], Color, false);
 	mDraw2DManager->DrawLine(points[2], points[0], Color, false);
+
+	location = RenderMath::Vector3Set(0.0f, 0.0f, 0.0f);
+	rotation = 0.01f;
+	scale = RenderMath::Vector3Set(1.0f, 1.0f, 0.0f);
+	transformMatrix = RenderMath::GetTransformMatrix3x3(location, rotation, scale);
+
+	mDraw2DManager->UpdateTriangle(transformMatrix);
 
 	// DrawTriangle
 	mDraw2DManager->DrawTriangleList();

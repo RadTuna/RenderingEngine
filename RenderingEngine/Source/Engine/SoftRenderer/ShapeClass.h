@@ -6,7 +6,7 @@
 
 struct Vertex
 {
-	Vector2 position;
+	Vector3 position;
 	ColorRGB Color;
 	Vector2 UV;
 };
@@ -22,16 +22,17 @@ public:
 
 	void Initialize();
 
-	Vector3 GetVertexWeight(Vector2& inPoint);
+	Vector3 GetVertexWeight(Vector3& inPoint);
 
 private:
 
-	Vector2 mVectorU;
-	Vector2 mVectorV;
-	Vector2 mVectorW;
+	Vector3 mVectorU;
+	Vector3 mVectorV;
+	Vector3 mVectorW;
 	float mWeightDenominator;
 	float mDotUV;
 	float mDotUU;
+	float mDotVV;
 
 };
 

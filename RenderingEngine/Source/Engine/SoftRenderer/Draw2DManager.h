@@ -11,8 +11,9 @@ public:
 	~Draw2DManager();
 
 	bool Initialize(class SoftRenderer* initSoftRenderer, class GDIHelper* initGDIHelper, const char* filename);
-	void DrawLine(struct Vector2 startLoc, struct Vector2 endLoc, struct ColorRGB rgb, bool useAntiAlise);
+	void DrawLine(struct Vector3& startLoc, struct Vector3& endLoc, struct ColorRGB& rgb, bool useAntiAlise);
 	bool SetTriangle(struct Triangle* vertices, int vertexCount);
+	void UpdateTriangle(struct Matrix3x3& transformMatrix);
 	bool SetQuad(struct Quad* vertices, int vertexCount);
 	void ClearTriangle();
 	void DrawTriangleList();
@@ -32,8 +33,8 @@ private:
 	class GDIHelper* mGDIHelper;
 	struct Triangle* mTriangleList;
 	class TextureHelper* mTextureHelper;
-	int mVertexCount;
-	int mCurrentVertexCount;
+	int mVerticesCount;
+	int mCurrentVerticesCount;
 	bool useTexture;
 
 };

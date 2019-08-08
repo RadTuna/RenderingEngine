@@ -1,5 +1,7 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+
 #include "Engine/Engine.h"
 
 
@@ -20,6 +22,10 @@ struct Vector3
 	float Y;
 	float Z;
 
+	Vector3 operator+(const Vector3& Other) const;
+	Vector3 operator-(const Vector3& Other) const;
+	Vector3 operator*(const Vector3& Other) const;
+	Vector3 operator*(const float& Other) const;
 };
 
 struct Vector4
@@ -42,6 +48,27 @@ struct Matrix2x2
 	float mat12;
 	float mat21;
 	float mat22;
+
+	static Matrix2x2 GetIdentity();
+	Matrix2x2 operator+(const Matrix2x2& Other) const;
+	Matrix2x2 operator-(const Matrix2x2& Other) const;
+};
+
+struct Matrix3x3
+{
+	float mat11;
+	float mat12;
+	float mat13;
+	float mat21;
+	float mat22;
+	float mat23;
+	float mat31;
+	float mat32;
+	float mat33;
+
+	static Matrix3x3 GetIdentity();
+	Matrix3x3 operator+(const Matrix3x3& Other) const;
+	Matrix3x3 operator-(const Matrix3x3& Other) const;
 };
 
 struct ColorRGB
@@ -63,16 +90,23 @@ class RenderMath
 {
 public:
 
-	static void MatrixMul(Matrix2x2* outMat, Matrix2x2 inMat);
-	static void MatrixMul(Vector2* outVector, Matrix2x2 inMat);
+	static void MatrixMul(Matrix2x2* outMat, const Matrix2x2& inMat);
+	static void MatrixMul(Vector2* outVector, const Matrix2x2& inMat);
+	static void MatrixMul(Matrix3x3* outVector, const Matrix3x3& inMat);
+	static void MatrixMul(Vector3* outVector, const Matrix3x3& inMat);
+	static Matrix3x3 GetRotationMatrix3x3(float rotation);
+	static Matrix3x3 GetLocationMatrix3x3(Vector3& location);
+	static Matrix3x3 GetScaleMatrix3x3(Vector3& scale);
+	static Matrix3x3 GetTransformMatrix3x3(Vector3& location, float rotation, Vector3& scale);
 
-	static Vector2 VectorSum(Vector2& inVector1, Vector2& inVector2);
-	static Vector2 VectorSub(Vector2& inVector1, Vector2& inVector2);
-	static float GetVectorLength(Vector2& inVector);
-	static float GetTriangleArea(float& length1, float& length2, float& angle);
-	static float DotProduct(Vector2& inVector1, Vector2& inVector2);
-	static Vector2 Normalize(Vector2& inVector);
-	static IntPoint2D Vector2toIntPoint2D(Vector2& inVector);
+	static float GetVectorLength(const Vector2& inVector);
+	static float GetTriangleArea(const float& length1, const float& length2, const float& angle);
+	static float DotProduct(const Vector2& inVector1, const Vector2& inVector2);
+	static float DotProduct(const Vector3& inVector1, const Vector3& inVector2);
+	static float HomoDotProduct(const Vector3& inVector1, const Vector3& inVector2);
+	static Vector2 Normalize(const Vector2& inVector);
+	static IntPoint2D Vector2toIntPoint2D(const Vector2& inVector);
+	static IntPoint2D Vector3toIntPoint2D(const Vector3& inVector);
 
 	static void SortVecticesByY(struct Triangle* Vertices);
 
@@ -91,6 +125,12 @@ public:
 
 	template<typename T, typename U, typename V>
 	static Vector3 Vector3Set(T x, U y, V z);
+
+	template<typename T>
+	static T GetMax(T aVal, T bVal);
+
+	template<typename T>
+	static T GetMin(T aVal, T bVal);
 
 };
 
@@ -135,4 +175,30 @@ Vector3 RenderMath::Vector3Set(T x, U y, V z)
 	temp.Y = static_cast<float>(y);
 	temp.Z = static_cast<float>(z);
 	return temp;
+}
+
+template<typename T>
+T RenderMath::GetMax(T aVal, T bVal)
+{
+	if (aVal > bVal)
+	{
+		return aVal;
+	}
+	else
+	{
+		return bVal;
+	}
+}
+
+template<typename T>
+T RenderMath::GetMin(T aVal, T bVal)
+{
+	if (aVal < bVal)
+	{
+		return aVal;
+	}
+	else
+	{
+		return bVal;
+	}
 }

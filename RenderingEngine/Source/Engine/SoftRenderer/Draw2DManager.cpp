@@ -52,13 +52,13 @@ bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGD
 	return true;
 }
 
-void Draw2DManager::DrawLine(Vector2 startLoc, Vector2 endLoc, ColorRGB rgb, bool useAntiAliase)
+void Draw2DManager::DrawLine(Vector3& startLoc, Vector3& endLoc, ColorRGB& rgb, bool useAntiAliase)
 {
 	mGDIHelper->SetColor(rgb);
 
-	const Matrix2x2 overTilt = { 0, 1, 1, 0 };
-	const Matrix2x2 inverseX = { -1, 0, 0, 1 };
-	const Matrix2x2 inverseY = { 1, 0, 0, -1 };
+	Matrix3x3 overTilt = { 0, 1, 0, 1, 0, 0, 0, 0, 1 };
+	Matrix3x3 inverseX = { -1, 0, 0, 0, 1, 0, 0, 0, 1 };
+	Matrix3x3 inverseY = { 1, 0, 0, 0, -1, 0, 0, 0, 1 };
 
 	float width = startLoc.X - endLoc.X;
 	float height = startLoc.Y - endLoc.Y;
@@ -96,7 +96,7 @@ void Draw2DManager::DrawLine(Vector2 startLoc, Vector2 endLoc, ColorRGB rgb, boo
 			}
 		}
 
-		Vector2 tempLoc = RenderMath::Vector2Set(x, yCoord);
+		Vector3 tempLoc = RenderMath::Vector3Set(x, yCoord, 1.0f);
 
 		if (inclination >= 1) // 기울기 1 초과
 		{
@@ -151,7 +151,7 @@ void Draw2DManager::DrawLine(Vector2 startLoc, Vector2 endLoc, ColorRGB rgb, boo
 		}
 		else
 		{
-			mSoftRenderer->PutPixel(RenderMath::Vector2toIntPoint2D(tempLoc));
+			mSoftRenderer->PutPixel(RenderMath::Vector3toIntPoint2D(tempLoc));
 		}
 	}
 
@@ -187,23 +187,33 @@ void Draw2DManager::GetYLocationf(float width, float height, float inX, float* o
 	return;
 }
 
-bool Draw2DManager::SetTriangle(Triangle* vertices, int vertexCount)
+bool Draw2DManager::SetTriangle(Triangle* vertices, int verticesCount)
 {
 
-	mTriangleList = new Triangle[vertexCount];
+	mTriangleList = new Triangle[verticesCount];
 	if (mTriangleList == nullptr)
 	{
 		return false;
 	}
 
-	mVertexCount = vertexCount;
+	mVerticesCount = verticesCount;
 
-	for (int i = 0; i < mVertexCount; ++i)
+	for (int i = 0; i < mVerticesCount; ++i)
 	{
 		mTriangleList[i] = vertices[i];
 	}
 
 	return true;
+}
+
+void Draw2DManager::UpdateTriangle(Matrix3x3& transformMatrix)
+{
+	for (int i = 0; i < mVerticesCount; ++i)
+	{
+		RenderMath::MatrixMul(&mTriangleList[i].point1.position, transformMatrix);
+		RenderMath::MatrixMul(&mTriangleList[i].point2.position, transformMatrix);
+		RenderMath::MatrixMul(&mTriangleList[i].point3.position, transformMatrix);
+	}
 }
 
 bool Draw2DManager::SetQuad(Quad* vertices, int vertexCount)
@@ -214,9 +224,9 @@ bool Draw2DManager::SetQuad(Quad* vertices, int vertexCount)
 		return false;
 	}
 
-	mVertexCount = vertexCount;
+	mVerticesCount = vertexCount;
 
-	for (int i = 0; i < mVertexCount; i += 2)
+	for (int i = 0; i < mVerticesCount; i += 2)
 	{
 		mTriangleList[i] = vertices[i / 2].triangle1;
 		mTriangleList[i + 1] = vertices[i / 2].triangle2;
@@ -239,12 +249,12 @@ void Draw2DManager::ClearTriangle()
 void Draw2DManager::DrawTriangleList()
 {
 	// 현재 버텍스 카운트를 초기화.
-	mCurrentVertexCount = 0;
+	mCurrentVerticesCount = 0;
 
-	for (int i = 0; i < mVertexCount; ++i)
+	for (int i = 0; i < mVerticesCount; ++i)
 	{
 		DrawTriangle(mTriangleList[i]);
-		mCurrentVertexCount++;
+		mCurrentVerticesCount++;
 	}
 }
 
@@ -294,8 +304,8 @@ void Draw2DManager::DrawBottomTriangle(Vertex point1, Vertex point2, Vertex poin
 		Vertex TempVertex1;
 		Vertex TempVertex2;
 
-		TempVertex1.position = RenderMath::Vector2Set(StartPosX, ScanLineY);
-		TempVertex2.position = RenderMath::Vector2Set(EndPosX, ScanLineY);
+		TempVertex1.position = RenderMath::Vector3Set(StartPosX, ScanLineY, 1.0f);
+		TempVertex2.position = RenderMath::Vector3Set(EndPosX, ScanLineY, 1.0f);
 
 		DrawFlatLine(TempVertex1, TempVertex2);
 
@@ -324,8 +334,8 @@ void Draw2DManager::DrawTopTriangle(Vertex point1, Vertex point2, Vertex point3)
 		Vertex TempVertex1;
 		Vertex TempVertex2;
 
-		TempVertex1.position = RenderMath::Vector2Set(StartPosX, ScanLineY);
-		TempVertex2.position = RenderMath::Vector2Set(EndPosX, ScanLineY);
+		TempVertex1.position = RenderMath::Vector3Set(StartPosX, ScanLineY, 1.0f);
+		TempVertex2.position = RenderMath::Vector3Set(EndPosX, ScanLineY, 1.0f);
 
 		DrawFlatLine(TempVertex1, TempVertex2);
 
@@ -343,18 +353,18 @@ void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
 		return;
 	}
 	
-	for (int i = (int)point1.position.X; i <= point2.position.X; ++i)
+	for (int i = (int)RenderMath::GetMin(point1.position.X, point2.position.X); i <= RenderMath::GetMax(point1.position.X, point2.position.X); ++i)
 	{
 		if (useTexture == true)
 		{
-			Vector2 currentPoint = RenderMath::Vector2Set(i, point1.position.Y);
+			Vector3 currentPoint = RenderMath::Vector3Set(i, point1.position.Y, 1.0f);
 
-			Vector3 vertexWeight = mTriangleList[mCurrentVertexCount].GetVertexWeight(currentPoint);
+			Vector3 vertexWeight = mTriangleList[mCurrentVerticesCount].GetVertexWeight(currentPoint);
 
 			Vector2 currentUV = 
-				mTriangleList[mCurrentVertexCount].point1.UV * vertexWeight.X +
-				mTriangleList[mCurrentVertexCount].point2.UV * vertexWeight.Y +
-				mTriangleList[mCurrentVertexCount].point3.UV * vertexWeight.Z;
+				mTriangleList[mCurrentVerticesCount].point1.UV * vertexWeight.X +
+				mTriangleList[mCurrentVerticesCount].point2.UV * vertexWeight.Y +
+				mTriangleList[mCurrentVerticesCount].point3.UV * vertexWeight.Z;
 			ColorRGB currentColor = mTextureHelper->GetPixelUV(currentUV);
 
 			mGDIHelper->SetColor(currentColor);
@@ -363,13 +373,13 @@ void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
 		}
 		else
 		{
-			Vector2 currentPoint = RenderMath::Vector2Set(i, point1.position.Y);
+			Vector3 currentPoint = RenderMath::Vector3Set(i, point1.position.Y, 1.0f);
 
-			Vector3 vertexWeight = mTriangleList[mCurrentVertexCount].GetVertexWeight(currentPoint);
+			Vector3 vertexWeight = mTriangleList[mCurrentVerticesCount].GetVertexWeight(currentPoint);
 			ColorRGB currentColor =
-				mTriangleList[mCurrentVertexCount].point1.Color * vertexWeight.X +
-				mTriangleList[mCurrentVertexCount].point2.Color * vertexWeight.Y +
-				mTriangleList[mCurrentVertexCount].point3.Color * vertexWeight.Z;
+				mTriangleList[mCurrentVerticesCount].point1.Color * vertexWeight.X +
+				mTriangleList[mCurrentVerticesCount].point2.Color * vertexWeight.Y +
+				mTriangleList[mCurrentVerticesCount].point3.Color * vertexWeight.Z;
 
 			mGDIHelper->SetColor(currentColor);
 

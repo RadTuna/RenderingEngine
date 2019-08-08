@@ -128,7 +128,7 @@ bool TextureHelper::LoadBmp(const char* filename)
 	return true;
 }
 
-ColorRGB TextureHelper::GetPixelUV(Vector2 uv)
+ColorRGB TextureHelper::GetPixelUV(Vector2& uv)
 {
 	int x = RenderMath::Clamp<int>(static_cast<int>(std::round(mTextureData->width * uv.X)), 0, mTextureData->width);
 	int y = RenderMath::Clamp<int>(static_cast<int>(std::round(mTextureData->height * uv.Y)), 0, mTextureData->height);
