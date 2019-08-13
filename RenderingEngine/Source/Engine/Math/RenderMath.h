@@ -107,6 +107,7 @@ public:
 	static Vector2 Normalize(const Vector2& inVector);
 	static IntPoint2D Vector2toIntPoint2D(const Vector2& inVector);
 	static IntPoint2D Vector3toIntPoint2D(const Vector3& inVector);
+	static constexpr float GetConvertRadianValue();
 
 	static void SortVecticesByY(struct Triangle* Vertices);
 

@@ -38,7 +38,7 @@ void RenderMath::MatrixMul(Matrix3x3* outMat, const Matrix3x3& inMat)
 
 Matrix3x3 RenderMath::GetRotationMatrix3x3(const float rotation)
 {
-	Matrix3x3 tempMat = { std::cosf(rotation / ((float)M_PI * 2.0f)), std::sinf(rotation / ((float)M_PI * 2.0f)), 0.0f, std::sinf(rotation / ((float)M_PI * 2.0f)) * -1.0f, std::cosf(rotation / ((float)M_PI * 2.0f)), 0.0f, 0.0f, 0.0f, 1.0f };
+	Matrix3x3 tempMat = { std::cosf(rotation / GetConvertRadianValue()), std::sinf(rotation / GetConvertRadianValue()), 0.0f, std::sinf(rotation / GetConvertRadianValue()) * -1.0f, std::cosf(rotation / GetConvertRadianValue()), 0.0f, 0.0f, 0.0f, 1.0f };
 	return tempMat;
 }
 
@@ -133,10 +133,15 @@ IntPoint2D RenderMath::Vector3toIntPoint2D(const Vector3& inVector)
 	return temp;
 }
 
+constexpr float RenderMath::GetConvertRadianValue()
+{
+	return 360.0f / (static_cast<float>(M_PI) * 2.0f);
+}
+
 
 void RenderMath::SortVecticesByY(Triangle* vertices)
 {
-	if (!(vertices->point1.position.Y >= vertices->point2.position.Y) && (vertices->point1.position.Y >= vertices->point3.position.Y))
+	if (!((vertices->point1.position.Y >= vertices->point2.position.Y) && (vertices->point1.position.Y >= vertices->point3.position.Y)))
 	{
 		if (vertices->point2.position.Y > vertices->point3.position.Y)
 		{
@@ -153,6 +158,7 @@ void RenderMath::SortVecticesByY(Triangle* vertices)
 		std::swap(vertices->point2, vertices->point3);
 	}
 
+	
 	if (vertices->point1.position.Y == vertices->point2.position.Y)
 	{
 		if (vertices->point1.position.X > vertices->point1.position.X)
@@ -168,7 +174,7 @@ void RenderMath::SortVecticesByY(Triangle* vertices)
 			std::swap(vertices->point2, vertices->point3);
 		}
 	}
-
+	
 	return;
 }
 

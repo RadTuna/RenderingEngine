@@ -107,7 +107,7 @@ bool SoftRenderer::SetRenderParameter()
 
 	// 카메라 위치, 회전을 설정.
 	Vector3 cameraLocation = RenderMath::Vector3Set(0.0f, 0.0f, 0.0f);
-	float cameraRotation = 0.0f;
+	float cameraRotation = 180.0f;
 
 	mViewCamera->SetLocation(cameraLocation);
 	mViewCamera->SetRotation(cameraRotation);
@@ -195,7 +195,7 @@ void SoftRenderer::UpdateFrame()
 
 	// DrawTriangle
 	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + RenderMath::Vector3Set(0.0f, 0.0f, 0.0f));
-	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + 0.1f);
+	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + 0.0f);
 	mDraw2DManager->DrawMesh(mViewCamera->GetViewMatrix());
 
 	// Buffer Swap 
