@@ -10,13 +10,13 @@ SoftRenderer::SoftRenderer()
 {
 	mGDIHelper = nullptr;
 	mDraw2DManager = nullptr;
+	mhWnd = nullptr;
 }
 
 bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 {
 	bool Result;
 	Triangle* vertices;
-	//Quad* vertices;
 
 	if (initGDIHelper == nullptr)
 	{
@@ -32,7 +32,6 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 
 	mhWnd = hWnd;
 
-	
 
 	mDraw2DManager = new class Draw2DManager;
 	if (mDraw2DManager == nullptr)
@@ -45,7 +44,6 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 	{
 		return false;
 	}
-
 	
 	// 트라이앵글리스트를 DrawManager에 등록
 	int vertexCount = 1;
@@ -73,44 +71,14 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 	{
 		return false;
 	}
+
+	Vector3 location = RenderMath::Vector3Set(0.0f, 5.0f, 0.0f);
+	float rotation = 0.1f;
+	Vector3 scale = RenderMath::Vector3Set(1.0f, 1.0f, 0.0f);
+	Matrix3x3 transformMatrix = RenderMath::GetTransformMatrix3x3(location, rotation, scale);
+
+	mDraw2DManager->SetTransformMatrix(transformMatrix);
 	
-
-	/*
-	int vertexCount = 2;
-
-	vertices = new Quad[vertexCount / 2];
-	if (vertices == nullptr)
-	{
-		return false;
-	}
-
-	Vertex quadVertices[4];
-	quadVertices[0].position = RenderMath::Vector2Set(-100, 100);
-	quadVertices[0].Color = RenderMath::ColorRGBSet(255, 0, 0);
-	quadVertices[0].UV = RenderMath::Vector2Set(0.0f, 0.0f);
-
-	quadVertices[1].position = RenderMath::Vector2Set(100, 100);
-	quadVertices[1].Color = RenderMath::ColorRGBSet(255, 0, 0);
-	quadVertices[1].UV = RenderMath::Vector2Set(1.0f, 0.0f);
-
-	quadVertices[2].position = RenderMath::Vector2Set(100, -100);
-	quadVertices[2].Color = RenderMath::ColorRGBSet(255, 0, 0);
-	quadVertices[2].UV = RenderMath::Vector2Set(1.0f, 1.0f);
-
-	quadVertices[3].position = RenderMath::Vector2Set(-100, -100);
-	quadVertices[3].Color = RenderMath::ColorRGBSet(255, 0, 0);
-	quadVertices[3].UV = RenderMath::Vector2Set(0.0f, 1.0f);
-
-	vertices[0].SetQuad(quadVertices[0], quadVertices[1], quadVertices[2], quadVertices[3]);
-
-	Result = mDraw2DManager->SetQuad(vertices, vertexCount);
-	if (Result == false)
-	{
-		return false;
-	}
-	*/
-
-	// Manager에 등록이 끝났으므로 할당해제.
 	delete[] vertices;
 	vertices = nullptr;
 
@@ -169,13 +137,6 @@ void SoftRenderer::UpdateFrame()
 	mDraw2DManager->DrawLine(points[1], points[3], Color, false);
 	mDraw2DManager->DrawLine(points[2], points[3], Color, false);
 	mDraw2DManager->DrawLine(points[2], points[0], Color, false);
-
-	location = RenderMath::Vector3Set(0.0f, 0.0f, 0.0f);
-	rotation = 0.01f;
-	scale = RenderMath::Vector3Set(1.0f, 1.0f, 0.0f);
-	transformMatrix = RenderMath::GetTransformMatrix3x3(location, rotation, scale);
-
-	mDraw2DManager->UpdateTriangle(transformMatrix);
 
 	// DrawTriangle
 	mDraw2DManager->DrawTriangleList();

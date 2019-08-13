@@ -4,6 +4,12 @@
 
 FPSCounter::FPSCounter()
 {
+	mFrequency = 0;
+	mStartTime = 0;
+	mTickPerMs = 0.0f;
+	mFrameTime = 0.0f;
+	mFramePerSecond = 0;
+	mCount = 0;
 }
 
 FPSCounter::~FPSCounter()

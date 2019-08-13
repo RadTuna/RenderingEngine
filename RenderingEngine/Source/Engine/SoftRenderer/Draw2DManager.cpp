@@ -16,6 +16,9 @@ Draw2DManager::Draw2DManager()
 	mSoftRenderer = nullptr;
 	mTriangleList = nullptr;
 	mTextureHelper = nullptr;
+	mVerticesCount = 0;
+	mCurrentVerticesCount = 0;
+	useTexture = false;
 }
 
 Draw2DManager::~Draw2DManager()
@@ -24,6 +27,18 @@ Draw2DManager::~Draw2DManager()
 	{
 		delete[] mTriangleList;
 		mTriangleList = nullptr;
+	}
+
+	if (mTextureHelper != nullptr)
+	{
+		delete mTextureHelper;
+		mTextureHelper = nullptr;
+	}
+
+	if (mTransformMatrix != nullptr)
+	{
+		delete mTransformMatrix;
+		mTransformMatrix = nullptr;
 	}
 }
 
@@ -43,6 +58,12 @@ bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGD
 
 	mTextureHelper = new class TextureHelper;
 	if (mTextureHelper == nullptr)
+	{
+		return false;
+	}
+
+	mTransformMatrix = new struct Matrix3x3;
+	if (mTransformMatrix == nullptr)
 	{
 		return false;
 	}
@@ -206,13 +227,13 @@ bool Draw2DManager::SetTriangle(Triangle* vertices, int verticesCount)
 	return true;
 }
 
-void Draw2DManager::UpdateTriangle(Matrix3x3& transformMatrix)
+void Draw2DManager::TransformTriangle()
 {
 	for (int i = 0; i < mVerticesCount; ++i)
 	{
-		RenderMath::MatrixMul(&mTriangleList[i].point1.position, transformMatrix);
-		RenderMath::MatrixMul(&mTriangleList[i].point2.position, transformMatrix);
-		RenderMath::MatrixMul(&mTriangleList[i].point3.position, transformMatrix);
+		RenderMath::MatrixMul(&mTriangleList[i].point1.position, *mTransformMatrix);
+		RenderMath::MatrixMul(&mTriangleList[i].point2.position, *mTransformMatrix);
+		RenderMath::MatrixMul(&mTriangleList[i].point3.position, *mTransformMatrix);
 	}
 }
 
@@ -248,6 +269,8 @@ void Draw2DManager::ClearTriangle()
 
 void Draw2DManager::DrawTriangleList()
 {
+	TransformTriangle();
+
 	// 현재 버텍스 카운트를 초기화.
 	mCurrentVerticesCount = 0;
 
@@ -256,6 +279,12 @@ void Draw2DManager::DrawTriangleList()
 		DrawTriangle(mTriangleList[i]);
 		mCurrentVerticesCount++;
 	}
+}
+
+void Draw2DManager::SetTransformMatrix(Matrix3x3& transformMatrix)
+{
+	*mTransformMatrix = transformMatrix;
+	return;
 }
 
 void Draw2DManager::DrawTriangle(Triangle& vertices)
