@@ -94,10 +94,10 @@ public:
 	static void MatrixMul(Vector2* outVector, const Matrix2x2& inMat);
 	static void MatrixMul(Matrix3x3* outVector, const Matrix3x3& inMat);
 	static void MatrixMul(Vector3* outVector, const Matrix3x3& inMat);
-	static Matrix3x3 GetRotationMatrix3x3(float rotation);
-	static Matrix3x3 GetLocationMatrix3x3(Vector3& location);
-	static Matrix3x3 GetScaleMatrix3x3(Vector3& scale);
-	static Matrix3x3 GetTransformMatrix3x3(Vector3& location, float rotation, Vector3& scale);
+	static Matrix3x3 GetRotationMatrix3x3(const float rotation);
+	static Matrix3x3 GetLocationMatrix3x3(const Vector3& location);
+	static Matrix3x3 GetScaleMatrix3x3(const Vector3& scale);
+	static Matrix3x3 GetTransformMatrix3x3(const Vector3& location, const float rotation, const Vector3& scale);
 
 	static float GetVectorLength(const Vector2& inVector);
 	static float GetTriangleArea(const float& length1, const float& length2, const float& angle);

@@ -1,6 +1,6 @@
 
 #include "RenderMath.h"
-#include "Engine/SoftRenderer/ShapeClass.h"
+#include "Engine/SoftRenderer/Mesh.h"
 
 
 void RenderMath::MatrixMul(Matrix2x2* outMat, const Matrix2x2& inMat)
@@ -36,25 +36,25 @@ void RenderMath::MatrixMul(Matrix3x3* outMat, const Matrix3x3& inMat)
 	outMat->mat33 = tempMat.mat31 * inMat.mat13 + tempMat.mat32 * inMat.mat23 + tempMat.mat33 * inMat.mat33;
 }
 
-Matrix3x3 RenderMath::GetRotationMatrix3x3(float rotation)
+Matrix3x3 RenderMath::GetRotationMatrix3x3(const float rotation)
 {
-	Matrix3x3 tempMat = { std::cosf(rotation / (float)M_PI), std::sinf(rotation / (float)M_PI), 0.0f, std::sinf(rotation / (float)M_PI) * -1.0f, std::cosf(rotation / (float)M_PI), 0.0f, 0.0f, 0.0f, 1.0f };
+	Matrix3x3 tempMat = { std::cosf(rotation / ((float)M_PI * 2.0f)), std::sinf(rotation / ((float)M_PI * 2.0f)), 0.0f, std::sinf(rotation / ((float)M_PI * 2.0f)) * -1.0f, std::cosf(rotation / ((float)M_PI * 2.0f)), 0.0f, 0.0f, 0.0f, 1.0f };
 	return tempMat;
 }
 
-Matrix3x3 RenderMath::GetLocationMatrix3x3(Vector3& location)
+Matrix3x3 RenderMath::GetLocationMatrix3x3(const Vector3& location)
 {
 	Matrix3x3 tempMat = { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, location.X, location.Y, 1.0f };
 	return tempMat;
 }
 
-Matrix3x3 RenderMath::GetScaleMatrix3x3(Vector3& scale)
+Matrix3x3 RenderMath::GetScaleMatrix3x3(const Vector3& scale)
 {
 	Matrix3x3 tempMat = { scale.X, 0.0f, 0.0f, 0.0f, scale.Y, 0.0f, 0.0f, 0.0f, 1.0f };
 	return tempMat;
 }
 
-Matrix3x3 RenderMath::GetTransformMatrix3x3(Vector3& location, float rotation, Vector3& scale)
+Matrix3x3 RenderMath::GetTransformMatrix3x3(const Vector3& location, const float rotation, const Vector3& scale)
 {
 	Matrix3x3 locationMat = GetLocationMatrix3x3(location);
 	Matrix3x3 rotationMat = GetRotationMatrix3x3(rotation);

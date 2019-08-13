@@ -3,7 +3,7 @@
 #include "Engine/SoftRenderer/GDIHelper.h"
 #include "Engine/SoftRenderer/SoftRenderer.h"
 #include "Engine/Math/RenderMath.h"
-#include "Engine/SoftRenderer/ShapeClass.h"
+#include "Engine/SoftRenderer/Mesh.h"
 #include "Engine/SoftRenderer/TextureHelper.h"
 
 
@@ -14,19 +14,18 @@ Draw2DManager::Draw2DManager()
 {
 	mGDIHelper = nullptr;
 	mSoftRenderer = nullptr;
-	mTriangleList = nullptr;
 	mTextureHelper = nullptr;
-	mVerticesCount = 0;
-	mCurrentVerticesCount = 0;
 	useTexture = false;
+	mMeshCapacity = 5;
+	mCurrentMeshIndex = 0;
 }
 
 Draw2DManager::~Draw2DManager()
 {
-	if (mTriangleList != nullptr)
+	if (mMeshList != nullptr)
 	{
-		delete[] mTriangleList;
-		mTriangleList = nullptr;
+		delete[] mMeshList;
+		mMeshList = nullptr;
 	}
 
 	if (mTextureHelper != nullptr)
@@ -68,9 +67,36 @@ bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGD
 		return false;
 	}
 
+	mMeshList = new class Mesh[mMeshCapacity];
+	if (mMeshList == nullptr)
+	{
+		return false;
+	}
+
 	useTexture = mTextureHelper->Initialize(filename);
 
 	return true;
+}
+
+void Draw2DManager::Release()
+{
+	if (mMeshList != nullptr)
+	{
+		delete[] mMeshList;
+		mMeshList = nullptr;
+	}
+
+	if (mTextureHelper != nullptr)
+	{
+		delete mTextureHelper;
+		mTextureHelper = nullptr;
+	}
+
+	if (mTransformMatrix != nullptr)
+	{
+		delete mTransformMatrix;
+		mTransformMatrix = nullptr;
+	}
 }
 
 void Draw2DManager::DrawLine(Vector3& startLoc, Vector3& endLoc, ColorRGB& rgb, bool useAntiAliase)
@@ -208,87 +234,59 @@ void Draw2DManager::GetYLocationf(float width, float height, float inX, float* o
 	return;
 }
 
-bool Draw2DManager::SetTriangle(Triangle* vertices, int verticesCount)
+void Draw2DManager::TransformTriangle(Triangle& vertices)
 {
+	RenderMath::MatrixMul(&vertices.point1.position, *mTransformMatrix);
+	RenderMath::MatrixMul(&vertices.point2.position, *mTransformMatrix);
+	RenderMath::MatrixMul(&vertices.point3.position, *mTransformMatrix);
+}
 
-	mTriangleList = new Triangle[verticesCount];
-	if (mTriangleList == nullptr)
+bool Draw2DManager::GenerateMesh(struct Triangle* vertices, int vertexCount)
+{
+	bool Result;
+
+	Result = mMeshList[mCurrentMeshIndex].Initialize(vertices, vertexCount);
+	if (Result == false)
 	{
 		return false;
 	}
 
-	mVerticesCount = verticesCount;
-
-	for (int i = 0; i < mVerticesCount; ++i)
-	{
-		mTriangleList[i] = vertices[i];
-	}
+	mCurrentMeshIndex++;
 
 	return true;
 }
 
-void Draw2DManager::TransformTriangle()
+void Draw2DManager::ClearMesh()
 {
-	for (int i = 0; i < mVerticesCount; ++i)
+	mMeshList[mCurrentMeshIndex].Release();
+
+	mCurrentMeshIndex--;
+}
+
+void Draw2DManager::DrawMesh(const Matrix3x3& viewMatrix)
+{
+	for (int i = 0; i < mCurrentMeshIndex; ++i)
 	{
-		RenderMath::MatrixMul(&mTriangleList[i].point1.position, *mTransformMatrix);
-		RenderMath::MatrixMul(&mTriangleList[i].point2.position, *mTransformMatrix);
-		RenderMath::MatrixMul(&mTriangleList[i].point3.position, *mTransformMatrix);
+		*mTransformMatrix = RenderMath::GetTransformMatrix3x3(mMeshList[i].GetLocation(), mMeshList[i].GetRotation(), mMeshList[i].GetScale());
+		RenderMath::MatrixMul(mTransformMatrix, viewMatrix);
+		DrawTriangleList(mMeshList[i].GetTriangleList(), mMeshList[i].GetVerticesCount());
 	}
 }
 
-bool Draw2DManager::SetQuad(Quad* vertices, int vertexCount)
+void Draw2DManager::DrawTriangleList(Triangle* triangleList, int verticesCount)
 {
-	mTriangleList = new Triangle[vertexCount];
-	if (mTriangleList == nullptr)
+	for (int i = 0; i < verticesCount; ++i)
 	{
-		return false;
-	}
-
-	mVerticesCount = vertexCount;
-
-	for (int i = 0; i < mVerticesCount; i += 2)
-	{
-		mTriangleList[i] = vertices[i / 2].triangle1;
-		mTriangleList[i + 1] = vertices[i / 2].triangle2;
-	}
-
-	return true;
-}
-
-void Draw2DManager::ClearTriangle()
-{
-	if (mTriangleList != nullptr)
-	{
-		delete[] mTriangleList;
-		mTriangleList = nullptr;
-	}
-
-	return;
-}
-
-void Draw2DManager::DrawTriangleList()
-{
-	TransformTriangle();
-
-	// 현재 버텍스 카운트를 초기화.
-	mCurrentVerticesCount = 0;
-
-	for (int i = 0; i < mVerticesCount; ++i)
-	{
-		DrawTriangle(mTriangleList[i]);
-		mCurrentVerticesCount++;
+		DrawTriangle(triangleList[i]);
 	}
 }
 
-void Draw2DManager::SetTransformMatrix(Matrix3x3& transformMatrix)
+void Draw2DManager::DrawTriangle(Triangle vertices)
 {
-	*mTransformMatrix = transformMatrix;
-	return;
-}
+	mCurrentTriangle = &vertices;
 
-void Draw2DManager::DrawTriangle(Triangle& vertices)
-{
+	TransformTriangle(vertices);
+
 	// 버텍스를 Y값 순으로 정렬함.
 	RenderMath::SortVecticesByY(&vertices);
 
@@ -388,12 +386,12 @@ void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
 		{
 			Vector3 currentPoint = RenderMath::Vector3Set(i, point1.position.Y, 1.0f);
 
-			Vector3 vertexWeight = mTriangleList[mCurrentVerticesCount].GetVertexWeight(currentPoint);
+			Vector3 vertexWeight = mCurrentTriangle->GetVertexWeight(currentPoint);
 
 			Vector2 currentUV = 
-				mTriangleList[mCurrentVerticesCount].point1.UV * vertexWeight.X +
-				mTriangleList[mCurrentVerticesCount].point2.UV * vertexWeight.Y +
-				mTriangleList[mCurrentVerticesCount].point3.UV * vertexWeight.Z;
+				mCurrentTriangle->point1.UV * vertexWeight.X +
+				mCurrentTriangle->point2.UV * vertexWeight.Y +
+				mCurrentTriangle->point3.UV * vertexWeight.Z;
 			ColorRGB currentColor = mTextureHelper->GetPixelUV(currentUV);
 
 			mGDIHelper->SetColor(currentColor);
@@ -404,11 +402,11 @@ void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
 		{
 			Vector3 currentPoint = RenderMath::Vector3Set(i, point1.position.Y, 1.0f);
 
-			Vector3 vertexWeight = mTriangleList[mCurrentVerticesCount].GetVertexWeight(currentPoint);
+			Vector3 vertexWeight = mCurrentTriangle->GetVertexWeight(currentPoint);
 			ColorRGB currentColor =
-				mTriangleList[mCurrentVerticesCount].point1.Color * vertexWeight.X +
-				mTriangleList[mCurrentVerticesCount].point2.Color * vertexWeight.Y +
-				mTriangleList[mCurrentVerticesCount].point3.Color * vertexWeight.Z;
+				mCurrentTriangle->point1.Color * vertexWeight.X +
+				mCurrentTriangle->point2.Color * vertexWeight.Y +
+				mCurrentTriangle->point3.Color * vertexWeight.Z;
 
 			mGDIHelper->SetColor(currentColor);
 

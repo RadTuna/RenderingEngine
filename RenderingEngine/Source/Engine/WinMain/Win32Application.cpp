@@ -18,6 +18,12 @@ Win32Application::Win32Application()
 
 Win32Application::~Win32Application()
 {
+	if (mFPSCounter != nullptr)
+	{
+		delete mFPSCounter;
+		mFPSCounter = nullptr;
+	}
+
 	if (mSoftRenderer != nullptr)
 	{
 		mSoftRenderer->Release();
@@ -30,17 +36,13 @@ Win32Application::~Win32Application()
 		delete mGDIHelper;
 		mGDIHelper = nullptr;
 	}
-
-	if (mFPSCounter != nullptr)
-	{
-		delete mFPSCounter;
-		mFPSCounter = nullptr;
-	}
 }
 
 // 윈도우의 초기화 및 메인루프를 동시에 담당합니다.
 int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
+	bool InitResult = false;
+
 	applicationHandle = this;
 
 	m_hInstance = hInstance;
@@ -108,7 +110,11 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 		return 0;
 	}
 
-	mSoftRenderer->Initialize(mGDIHelper, &m_hwnd);
+	InitResult = mSoftRenderer->Initialize(mGDIHelper, &m_hwnd);
+	if (InitResult == false)
+	{
+		return 0;
+	}
 
 	mFPSCounter = new FPSCounter;
 	if (mFPSCounter == nullptr)
@@ -116,7 +122,11 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 		return 0;
 	}
 
-	mFPSCounter->Initialize();
+	InitResult = mFPSCounter->Initialize();
+	if (InitResult == false)
+	{
+		return 0;
+	}
 	
 
 	while (msg.message != WM_QUIT)
@@ -144,6 +154,25 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 		{
 			WaitMessage();
 		}
+	}
+
+	if (mFPSCounter != nullptr)
+	{
+		delete mFPSCounter;
+		mFPSCounter = nullptr;
+	}
+
+	if (mSoftRenderer != nullptr)
+	{
+		mSoftRenderer->Release();
+		delete mSoftRenderer;
+		mSoftRenderer = nullptr;
+	}
+
+	if (mGDIHelper != nullptr)
+	{
+		delete mGDIHelper;
+		mGDIHelper = nullptr;
 	}
 
 	// Return this part of the WM_QUIT message to Windows.

@@ -54,11 +54,14 @@
     <ClInclude Include="Source\Engine\SoftRenderer\TextureHelper.h">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\SoftRenderer\ShapeClass.h">
-      <Filter>Engine\Renderer\SoftRenderer</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\Profiler\FPSCounter.h">
       <Filter>Engine\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\SoftRenderer\ViewCamera.h">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\SoftRenderer\Mesh.h">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -83,11 +86,14 @@
     <ClCompile Include="Source\Engine\SoftRenderer\TextureHelper.cpp">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\SoftRenderer\ShapeClass.cpp">
-      <Filter>Engine\Renderer\SoftRenderer</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\Profiler\FPSCounter.cpp">
       <Filter>Engine\Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\SoftRenderer\ViewCamera.cpp">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\SoftRenderer\Mesh.cpp">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

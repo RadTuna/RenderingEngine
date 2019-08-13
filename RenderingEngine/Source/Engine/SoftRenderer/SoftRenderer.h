@@ -8,7 +8,7 @@ class SoftRenderer
 public:
 
 	SoftRenderer();
-	~SoftRenderer() = default;
+	~SoftRenderer();
 
 	bool Initialize(class GDIHelper* initGDIHelper, HWND* hWnd);
 	void Release();
@@ -19,10 +19,13 @@ public:
 
 private:
 
+	bool SetRenderParameter();
+
 private:
 
 	class GDIHelper* mGDIHelper;
 	class Draw2DManager* mDraw2DManager;
+	class ViewCamera* mViewCamera;
 	HWND* mhWnd;
 
 };

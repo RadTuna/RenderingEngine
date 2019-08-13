@@ -3,7 +3,8 @@
 #include "Engine/Math/RenderMath.h"
 #include "Engine/SoftRenderer/GDIHelper.h"
 #include "Engine/SoftRenderer/Draw2DManager.h"
-#include "Engine/SoftRenderer/ShapeClass.h"
+#include "Engine/SoftRenderer/Mesh.h"
+#include "Engine/SoftRenderer/ViewCamera.h"
 
 
 SoftRenderer::SoftRenderer()
@@ -13,10 +14,26 @@ SoftRenderer::SoftRenderer()
 	mhWnd = nullptr;
 }
 
+SoftRenderer::~SoftRenderer()
+{
+	if (mViewCamera != nullptr)
+	{
+		mViewCamera->Release();
+		delete mViewCamera;
+		mViewCamera = nullptr;
+	}
+
+	if (mDraw2DManager != nullptr)
+	{
+		mDraw2DManager->Release();
+		delete mDraw2DManager;
+		mDraw2DManager = nullptr;
+	}
+}
+
 bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 {
 	bool Result;
-	Triangle* vertices;
 
 	if (initGDIHelper == nullptr)
 	{
@@ -44,7 +61,59 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 	{
 		return false;
 	}
-	
+
+	mViewCamera = new class ViewCamera;
+	if (mViewCamera == nullptr)
+	{
+		return false;
+	}
+
+	Result = mViewCamera->Initialize();
+	if (Result == false)
+	{
+		return false;
+	}
+
+	Result = SetRenderParameter();
+	if (Result == false)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void SoftRenderer::Release()
+{
+	if (mViewCamera != nullptr)
+	{
+		mViewCamera->Release();
+		delete mViewCamera;
+		mViewCamera = nullptr;
+	}
+
+	if (mDraw2DManager != nullptr)
+	{
+		mDraw2DManager->Release();
+		delete mDraw2DManager;
+		mDraw2DManager = nullptr;
+	}
+}
+
+bool SoftRenderer::SetRenderParameter()
+{
+	bool Result;
+	Triangle* vertices;
+
+	// 카메라 위치, 회전을 설정.
+	Vector3 cameraLocation = RenderMath::Vector3Set(0.0f, 0.0f, 0.0f);
+	float cameraRotation = 0.0f;
+
+	mViewCamera->SetLocation(cameraLocation);
+	mViewCamera->SetRotation(cameraRotation);
+	mViewCamera->CalculrateViewMatrix();
+
+
 	// 트라이앵글리스트를 DrawManager에 등록
 	int vertexCount = 1;
 
@@ -66,28 +135,18 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 	vertices[0].point3.Color = RenderMath::ColorRGBSet(0, 0, 255);
 	vertices[0].point3.UV = RenderMath::Vector2Set(1.0f, 1.0f);
 
-	Result = mDraw2DManager->SetTriangle(vertices, vertexCount);
+	Result = mDraw2DManager->GenerateMesh(vertices, vertexCount);
 	if (Result == false)
 	{
 		return false;
 	}
 
-	Vector3 location = RenderMath::Vector3Set(0.0f, 5.0f, 0.0f);
-	float rotation = 0.1f;
-	Vector3 scale = RenderMath::Vector3Set(1.0f, 1.0f, 0.0f);
-	Matrix3x3 transformMatrix = RenderMath::GetTransformMatrix3x3(location, rotation, scale);
+	mDraw2DManager->GetMeshList()[0].SetTransform(RenderMath::Vector3Set(0.0f, 0.0f, 0.0f), 0.0f, RenderMath::Vector3Set(1.0f, 1.0f, 0.0f));
 
-	mDraw2DManager->SetTransformMatrix(transformMatrix);
-	
 	delete[] vertices;
 	vertices = nullptr;
 
 	return true;
-}
-
-void SoftRenderer::Release()
-{
-
 }
 
 bool SoftRenderer::IsInRange(int x, int y)
@@ -114,10 +173,6 @@ void SoftRenderer::PutPixel(IntPoint2D inPoint)
 void SoftRenderer::UpdateFrame()
 {
 	Vector3 points[4];
-	Matrix3x3 transformMatrix;
-	Vector3 location;
-	Vector3 scale;
-	float rotation;
 	ColorRGB Color;
 
 	points[0] = RenderMath::Vector3Set(-225, 110, 1);
@@ -139,7 +194,9 @@ void SoftRenderer::UpdateFrame()
 	mDraw2DManager->DrawLine(points[2], points[0], Color, false);
 
 	// DrawTriangle
-	mDraw2DManager->DrawTriangleList();
+	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + RenderMath::Vector3Set(0.0f, 0.0f, 0.0f));
+	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + 0.1f);
+	mDraw2DManager->DrawMesh(mViewCamera->GetViewMatrix());
 
 	// Buffer Swap 
 	mGDIHelper->BufferSwap();
