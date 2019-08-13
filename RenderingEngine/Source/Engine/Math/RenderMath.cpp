@@ -138,6 +138,17 @@ constexpr float RenderMath::GetConvertRadianValue()
 	return 360.0f / (static_cast<float>(M_PI) * 2.0f);
 }
 
+bool RenderMath::IsNearestFloat(float valueA, float valueB, float tolerance)
+{
+	if (abs(valueA - valueB) < tolerance)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 void RenderMath::SortVecticesByY(Triangle* vertices)
 {

@@ -5,6 +5,8 @@
 #include "Engine/Engine.h"
 
 
+#define KINDA_SMALL_NUMBER 1.e-3f
+
 struct Vector2
 {
 	float X;
@@ -108,6 +110,7 @@ public:
 	static IntPoint2D Vector2toIntPoint2D(const Vector2& inVector);
 	static IntPoint2D Vector3toIntPoint2D(const Vector3& inVector);
 	static constexpr float GetConvertRadianValue();
+	static bool IsNearestFloat(float valueA, float valueB, float tolerance = KINDA_SMALL_NUMBER);
 
 	static void SortVecticesByY(struct Triangle* Vertices);
 

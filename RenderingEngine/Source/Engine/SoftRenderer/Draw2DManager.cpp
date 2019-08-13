@@ -292,11 +292,11 @@ void Draw2DManager::DrawTriangle(Triangle vertices)
 
 	vertices.Initialize();
 
-	if (vertices.point2.position.Y == vertices.point3.position.Y)
+	if (RenderMath::IsNearestFloat(vertices.point2.position.Y, vertices.point3.position.Y))
 	{
 		DrawBottomTriangle(vertices.point1, vertices.point2, vertices.point3);
 	}
-	else if (vertices.point1.position.Y == vertices.point2.position.Y)
+	else if (RenderMath::IsNearestFloat(vertices.point1.position.Y, vertices.point2.position.Y))
 	{
 		DrawTopTriangle(vertices.point1, vertices.point2, vertices.point3);
 	}
@@ -315,7 +315,7 @@ void Draw2DManager::DrawTriangle(Triangle vertices)
 
 void Draw2DManager::DrawBottomTriangle(Vertex point1, Vertex point2, Vertex point3)
 {
-	if (point2.position.Y != point3.position.Y)
+	if (!RenderMath::IsNearestFloat(point2.position.Y, point3.position.Y))
 	{
 		return;
 	}
@@ -345,7 +345,7 @@ void Draw2DManager::DrawBottomTriangle(Vertex point1, Vertex point2, Vertex poin
 
 void Draw2DManager::DrawTopTriangle(Vertex point1, Vertex point2, Vertex point3)
 {
-	if (point1.position.Y != point2.position.Y)
+	if (!RenderMath::IsNearestFloat(point1.position.Y, point2.position.Y))
 	{
 		return;
 	}
