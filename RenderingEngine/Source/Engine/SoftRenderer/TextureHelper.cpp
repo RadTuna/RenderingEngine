@@ -17,10 +17,45 @@ bool TextureHelper::Initialize(const char* filename)
 		return false;
 	}
 
-	Result = LoadBmp(filename);
-	if (Result == false)
+	// ∆ƒ¿œ¿« »Æ¿Â¿⁄ »πµÊ.
+	int endFile;
+	for (int i = 0; ; ++i)
 	{
-		delete mTextureData;
+		if (filename[i] == '\0')
+		{
+			endFile = i;
+			break;
+		}
+	}
+
+	char fileType[4];
+	int typeIndex = 0;
+	for (int i = endFile - 3; i <= endFile; ++i)
+	{
+		fileType[typeIndex] = filename[i];
+		typeIndex++;
+	}
+
+	if (strcmp(fileType, "bmp") == 0)
+	{
+		Result = LoadBmp(filename);
+		if (Result == false)
+		{
+			delete mTextureData;
+			return false;
+		}
+	}
+	else if (strcmp(fileType, "tga") == 0)
+	{
+		Result = LoadTarga(filename);
+		if (Result == false)
+		{
+			delete mTextureData;
+			return false;
+		}
+	}
+	else
+	{
 		return false;
 	}
 
@@ -94,7 +129,7 @@ bool TextureHelper::LoadBmp(const char* filename)
 		return false;
 	}
 
-	mTextureData->colorData = new ColorRGB[imageSize / 3];
+	mTextureData->colorData = new ColorRGBA[imageSize / 3];
 	if (mTextureData->colorData == nullptr)
 	{
 		delete[] imageData;
@@ -109,9 +144,9 @@ bool TextureHelper::LoadBmp(const char* filename)
 	{
 		for (int j = 0; j < mTextureData->width; ++j)
 		{
-			mTextureData->colorData[Index].Red = imageData[k + 2]; // Red
-			mTextureData->colorData[Index].Green = imageData[k + 1]; // Green
-			mTextureData->colorData[Index].Blue = imageData[k + 0]; // Blue
+			mTextureData->colorData[Index].red = imageData[k + 2]; // Red
+			mTextureData->colorData[Index].green = imageData[k + 1]; // Green
+			mTextureData->colorData[Index].blue = imageData[k + 0]; // Blue
 
 			k += 3;
 			Index++;
@@ -128,17 +163,103 @@ bool TextureHelper::LoadBmp(const char* filename)
 	return true;
 }
 
-ColorRGB TextureHelper::GetPixelUV(Vector2& uv)
+bool TextureHelper::LoadTarga(const char* filename)
+{
+	FILE* filePtr;
+	errno_t err;
+	unsigned int fileSize;
+	TargaHeader targaHeader;
+	BYTE* imageData;
+
+	err = fopen_s(&filePtr, filename, "rb");
+	if (err != 0)
+	{
+		return false;
+	}
+
+	fileSize = static_cast<unsigned int>(fread(&targaHeader, 1, sizeof(TargaHeader), filePtr));
+	if (fileSize != sizeof(TargaHeader))
+	{
+		return false;
+	}
+
+	if (targaHeader.bpp != 32)
+	{
+		return false;
+	}
+
+	mTextureData->width = static_cast<int>(targaHeader.width);
+	mTextureData->height = static_cast<int>(targaHeader.height);
+
+	int imageSize = mTextureData->width * mTextureData->height * 4;
+
+	imageData = new BYTE[imageSize];
+	if (imageData == nullptr)
+	{
+		return false;
+	}
+
+	fileSize = static_cast<unsigned int>(fread(imageData, 1, imageSize, filePtr));
+	if (fileSize != imageSize)
+	{
+		delete[] imageData;
+		return false;
+	}
+
+	err = fclose(filePtr);
+	if (err != 0)
+	{
+		delete[] imageData;
+		return false;
+	}
+
+	mTextureData->colorData = new ColorRGBA[imageSize / 4];
+	if (mTextureData->colorData == nullptr)
+	{
+		delete[] imageData;
+		return false;
+	}
+
+	int Index = 0;
+
+	int k = (mTextureData->width * mTextureData->height * 4) - (mTextureData->width * 4);
+
+	for (int i = 0; i < mTextureData->height; ++i)
+	{
+		for (int j = 0; j < mTextureData->width; ++j)
+		{
+			mTextureData->colorData[Index].red = imageData[k + 2]; // Red
+			mTextureData->colorData[Index].green = imageData[k + 1]; // Green
+			mTextureData->colorData[Index].blue = imageData[k + 0]; // Blue
+			mTextureData->colorData[Index].alpha = imageData[k + 3]; // Alpha
+
+			k += 4;
+			Index++;
+		}
+		k -= (mTextureData->width * 8);
+	}
+
+	if (imageData != nullptr)
+	{
+		delete[] imageData;
+		imageData = nullptr;
+	}
+
+	return true;
+
+}
+
+ColorRGBA TextureHelper::GetPixelColor(Vector2& uv)
 {
 	int x = RenderMath::Clamp<int>(static_cast<int>(std::round(mTextureData->width * uv.X)), 0, mTextureData->width);
 	int y = RenderMath::Clamp<int>(static_cast<int>(std::round(mTextureData->height * uv.Y)), 0, mTextureData->height);
 
-	return GetPixel(x, y);
+	return GetPixelColor(x, y);
 }
 
-ColorRGB TextureHelper::GetPixel(int x, int y)
+ColorRGBA TextureHelper::GetPixelColor(int x, int y)
 {
-	ColorRGB TempRGB = mTextureData->colorData[mTextureData->width * y + x];
+	ColorRGBA TempRGB = mTextureData->colorData[mTextureData->width * y + x];
 	return TempRGB;
 }
 

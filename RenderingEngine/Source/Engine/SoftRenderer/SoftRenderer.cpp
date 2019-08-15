@@ -3,7 +3,7 @@
 #include "Engine/Math/RenderMath.h"
 #include "Engine/SoftRenderer/GDIHelper.h"
 #include "Engine/SoftRenderer/Draw2DManager.h"
-#include "Engine/SoftRenderer/Mesh.h"
+#include "Engine/SoftRenderer/Object.h"
 #include "Engine/SoftRenderer/ViewCamera.h"
 
 
@@ -56,7 +56,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 		return false;
 	}
 
-	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/stone.bmp");
+	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/tuna.tga");
 	if (Result == false)
 	{
 		return false;
@@ -124,15 +124,15 @@ bool SoftRenderer::SetRenderParameter()
 	}
 
 	vertices[0].point1.position = RenderMath::Vector3Set(0, 100, 1);
-	vertices[0].point1.Color = RenderMath::ColorRGBSet(255, 0, 0);
+	vertices[0].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
 	vertices[0].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
 
 	vertices[0].point2.position = RenderMath::Vector3Set(-100, -100, 1);
-	vertices[0].point2.Color = RenderMath::ColorRGBSet(0, 255, 0);
+	vertices[0].point2.Color = RenderMath::ColorRGBASet(0, 255, 0, 255);
 	vertices[0].point2.UV = RenderMath::Vector2Set(0.0f, 1.0f);
 
 	vertices[0].point3.position = RenderMath::Vector3Set(100, -100, 1);
-	vertices[0].point3.Color = RenderMath::ColorRGBSet(0, 0, 255);
+	vertices[0].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
 	vertices[0].point3.UV = RenderMath::Vector2Set(1.0f, 1.0f);
 
 	Result = mDraw2DManager->GenerateMesh(vertices, vertexCount);
@@ -173,9 +173,9 @@ void SoftRenderer::PutPixel(IntPoint2D inPoint)
 void SoftRenderer::UpdateFrame()
 {
 	Vector3 points[4];
-	ColorRGB Color;
+	ColorRGBA Color;
 
-	points[0] = RenderMath::Vector3Set(-225, 110, 1);
+	points[0] = RenderMath::Vector3Set(-295, 130, 1);
 	points[1] = RenderMath::Vector3Set(225, 110, 1);
 	points[2] = RenderMath::Vector3Set(-115, -110, 1);
 	points[3] = RenderMath::Vector3Set(115, -110, 1);
@@ -185,7 +185,7 @@ void SoftRenderer::UpdateFrame()
 	mGDIHelper->Clear();
 
 	// Set DrawColor
-	Color.SetRGB(255, 0, 0);
+	Color.SetRGB(255, 0, 0, 255);
 
 	// DrawLine
 	mDraw2DManager->DrawLine(points[0], points[1], Color, false);
@@ -194,7 +194,7 @@ void SoftRenderer::UpdateFrame()
 	mDraw2DManager->DrawLine(points[2], points[0], Color, false);
 
 	// DrawTriangle
-	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + RenderMath::Vector3Set(-0.5f, 0.5f, 0.0f));
+	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + RenderMath::Vector3Set(-0.5f, -0.5f, 0.0f));
 	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + 2.0f);
 	mDraw2DManager->DrawMesh(mViewCamera->GetViewMatrix());
 

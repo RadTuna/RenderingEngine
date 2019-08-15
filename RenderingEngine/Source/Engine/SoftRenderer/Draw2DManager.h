@@ -12,7 +12,7 @@ public:
 
 	bool Initialize(class SoftRenderer* initSoftRenderer, class GDIHelper* initGDIHelper, const char* filename);
 	void Release();
-	void DrawLine(struct Vector3& startLoc, struct Vector3& endLoc, struct ColorRGB& rgb, bool useAntiAliase);
+	void DrawLine(struct Vector3& startLoc, struct Vector3& endLoc, struct ColorRGBA& rgb, bool useAntiAliase);
 	bool GenerateMesh(struct Triangle* vertices, int vertexCount);
 	void ClearMesh();
 	void DrawMesh(const struct Matrix3x3& viewMatrix);
@@ -32,16 +32,16 @@ private:
 
 	class SoftRenderer* mSoftRenderer;
 	class GDIHelper* mGDIHelper;
-	class Mesh* mMeshList;
+	class Object* mObjectList;
 	class TextureHelper* mTextureHelper;
 	struct Matrix3x3* mTransformMatrix;
 	struct Triangle* mCurrentTriangle;
-	int mMeshCapacity;
-	int mCurrentMeshIndex;
+	int mObjectCapacity;
+	int mCurrentObjectIndex;
 	bool useTexture;
 
 public:
 
-	inline Mesh* GetMeshList() const { return mMeshList; }
+	inline Object* GetMeshList() const { return mObjectList; }
 
 };

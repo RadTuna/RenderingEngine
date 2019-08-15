@@ -28,7 +28,7 @@
     <ClInclude Include="Source\Engine\SoftRenderer\GDIHelper.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\SoftRenderer.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\TextureHelper.h" />
-    <ClInclude Include="Source\Engine\SoftRenderer\Mesh.h" />
+    <ClInclude Include="Source\Engine\SoftRenderer\Object.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\ViewCamera.h" />
     <ClInclude Include="Source\Engine\WinMain\Win32Application.h" />
   </ItemGroup>
@@ -39,7 +39,7 @@
     <ClCompile Include="Source\Engine\SoftRenderer\GDIHelper.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\SoftRenderer.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\TextureHelper.cpp" />
-    <ClCompile Include="Source\Engine\SoftRenderer\Mesh.cpp" />
+    <ClCompile Include="Source\Engine\SoftRenderer\Object.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\ViewCamera.cpp" />
     <ClCompile Include="Source\Engine\WinMain\Win32Application.cpp" />
     <ClCompile Include="Source\Engine\WinMain\WinMain.cpp" />

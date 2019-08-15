@@ -9,9 +9,18 @@ private:
 
 	struct Texture2D
 	{
-		ColorRGB* colorData;
+		ColorRGBA* colorData;
 		int width;
 		int height;
+	};
+
+	struct TargaHeader
+	{
+		unsigned char data1[12];
+		unsigned short width;
+		unsigned short height;
+		unsigned char bpp;
+		unsigned char data2;
 	};
 
 public:
@@ -23,8 +32,9 @@ public:
 	void Release();
 
 	bool LoadBmp(const char* filename);
-	ColorRGB GetPixelUV(Vector2& uv);
-	ColorRGB GetPixel(int x, int y);
+	bool LoadTarga(const char* filename);
+	ColorRGBA GetPixelColor(Vector2& uv);
+	ColorRGBA GetPixelColor(int x, int y);
 
 private:
 

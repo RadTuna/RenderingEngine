@@ -13,14 +13,33 @@ void GDIHelper::SetColor(BYTE r, BYTE g, BYTE b)
 	currentColor = RGB(b, g, r);
 }
 
-void GDIHelper::SetColor(struct ColorRGB rgb)
+void GDIHelper::SetColor(struct ColorRGBA rgb)
 {
-	currentColor = RGB(rgb.Blue, rgb.Green, rgb.Red);
+	currentColor = RGB(rgb.blue, rgb.green, rgb.red);
 }
 
 void GDIHelper::SetColor(ULONG color)
 {
 	currentColor = color;
+}
+
+ColorRGBA GDIHelper::GetPixelColor(int x, int y)
+{
+	ColorRGBA temp;
+
+	x += SomWidth / 2;
+	y += SomHeight / 2;
+
+	int destCoord = (SomWidth * SomHeight) - (SomWidth * y - x);
+
+	ULONG* colorField = reinterpret_cast<ULONG*>(pBits);
+
+	temp.red = GetBValue(colorField[destCoord]);
+	temp.green = GetGValue(colorField[destCoord]);
+	temp.blue = GetRValue(colorField[destCoord]);
+	temp.alpha = 255;
+
+	return temp;
 }
 
 void GDIHelper::Clear()

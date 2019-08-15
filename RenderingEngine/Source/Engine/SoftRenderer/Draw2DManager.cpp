@@ -3,7 +3,7 @@
 #include "Engine/SoftRenderer/GDIHelper.h"
 #include "Engine/SoftRenderer/SoftRenderer.h"
 #include "Engine/Math/RenderMath.h"
-#include "Engine/SoftRenderer/Mesh.h"
+#include "Engine/SoftRenderer/Object.h"
 #include "Engine/SoftRenderer/TextureHelper.h"
 
 
@@ -16,16 +16,16 @@ Draw2DManager::Draw2DManager()
 	mSoftRenderer = nullptr;
 	mTextureHelper = nullptr;
 	useTexture = false;
-	mMeshCapacity = 5;
-	mCurrentMeshIndex = 0;
+	mObjectCapacity = 5;
+	mCurrentObjectIndex = 0;
 }
 
 Draw2DManager::~Draw2DManager()
 {
-	if (mMeshList != nullptr)
+	if (mObjectList != nullptr)
 	{
-		delete[] mMeshList;
-		mMeshList = nullptr;
+		delete[] mObjectList;
+		mObjectList = nullptr;
 	}
 
 	if (mTextureHelper != nullptr)
@@ -67,8 +67,8 @@ bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGD
 		return false;
 	}
 
-	mMeshList = new class Mesh[mMeshCapacity];
-	if (mMeshList == nullptr)
+	mObjectList = new class Object[mObjectCapacity];
+	if (mObjectList == nullptr)
 	{
 		return false;
 	}
@@ -80,10 +80,10 @@ bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGD
 
 void Draw2DManager::Release()
 {
-	if (mMeshList != nullptr)
+	if (mObjectList != nullptr)
 	{
-		delete[] mMeshList;
-		mMeshList = nullptr;
+		delete[] mObjectList;
+		mObjectList = nullptr;
 	}
 
 	if (mTextureHelper != nullptr)
@@ -99,7 +99,7 @@ void Draw2DManager::Release()
 	}
 }
 
-void Draw2DManager::DrawLine(Vector3& startLoc, Vector3& endLoc, ColorRGB& rgb, bool useAntiAliase)
+void Draw2DManager::DrawLine(Vector3& startLoc, Vector3& endLoc, ColorRGBA& rgb, bool useAntiAliase)
 {
 	mGDIHelper->SetColor(rgb);
 
@@ -245,31 +245,53 @@ bool Draw2DManager::GenerateMesh(struct Triangle* vertices, int vertexCount)
 {
 	bool Result;
 
-	Result = mMeshList[mCurrentMeshIndex].Initialize(vertices, vertexCount);
+	Result = mObjectList[mCurrentObjectIndex].Initialize(vertices, vertexCount);
 	if (Result == false)
 	{
 		return false;
 	}
 
-	mCurrentMeshIndex++;
+	mCurrentObjectIndex++;
+
+	// ObjectCapacity를 초과하면 2배로 용량을 늘림.
+	if (mCurrentObjectIndex >= mObjectCapacity)
+	{
+		mObjectCapacity *= 2;
+		Object* tempObjectList = new Object[mObjectCapacity];
+		if (tempObjectList == nullptr)
+		{
+			return false;
+		}
+
+		mObjectList->DeepCopy(tempObjectList);
+
+		if (mObjectList != nullptr)
+		{
+			mObjectList->Release();
+			delete[] mObjectList;
+			mObjectList = nullptr;
+		}
+
+		mObjectList = tempObjectList;
+	}
 
 	return true;
 }
 
 void Draw2DManager::ClearMesh()
 {
-	mMeshList[mCurrentMeshIndex].Release();
+	mObjectList[mCurrentObjectIndex].Release();
 
-	mCurrentMeshIndex--;
+	mCurrentObjectIndex--;
 }
 
 void Draw2DManager::DrawMesh(const Matrix3x3& viewMatrix)
 {
-	for (int i = 0; i < mCurrentMeshIndex; ++i)
+	for (int i = 0; i < mCurrentObjectIndex; ++i)
 	{
-		*mTransformMatrix = RenderMath::GetTransformMatrix3x3(mMeshList[i].GetLocation(), mMeshList[i].GetRotation(), mMeshList[i].GetScale());
+		*mTransformMatrix = RenderMath::GetTransformMatrix3x3(mObjectList[i].GetLocation(), mObjectList[i].GetRotation(), mObjectList[i].GetScale());
 		RenderMath::MatrixMul(mTransformMatrix, viewMatrix);
-		DrawTriangleList(mMeshList[i].GetTriangleList(), mMeshList[i].GetVerticesCount());
+		DrawTriangleList(mObjectList[i].GetTriangleList(), mObjectList[i].GetVerticesCount());
 	}
 }
 
@@ -292,11 +314,11 @@ void Draw2DManager::DrawTriangle(Triangle vertices)
 
 	vertices.Initialize();
 
-	if (RenderMath::IsNearestFloat(vertices.point2.position.Y, vertices.point3.position.Y))
+	if (RenderMath::IsNearlyFloat(vertices.point2.position.Y, vertices.point3.position.Y))
 	{
 		DrawBottomTriangle(vertices.point1, vertices.point2, vertices.point3);
 	}
-	else if (RenderMath::IsNearestFloat(vertices.point1.position.Y, vertices.point2.position.Y))
+	else if (RenderMath::IsNearlyFloat(vertices.point1.position.Y, vertices.point2.position.Y))
 	{
 		DrawTopTriangle(vertices.point1, vertices.point2, vertices.point3);
 	}
@@ -315,7 +337,7 @@ void Draw2DManager::DrawTriangle(Triangle vertices)
 
 void Draw2DManager::DrawBottomTriangle(Vertex point1, Vertex point2, Vertex point3)
 {
-	if (!RenderMath::IsNearestFloat(point2.position.Y, point3.position.Y))
+	if (!RenderMath::IsNearlyFloat(point2.position.Y, point3.position.Y))
 	{
 		return;
 	}
@@ -345,7 +367,7 @@ void Draw2DManager::DrawBottomTriangle(Vertex point1, Vertex point2, Vertex poin
 
 void Draw2DManager::DrawTopTriangle(Vertex point1, Vertex point2, Vertex point3)
 {
-	if (!RenderMath::IsNearestFloat(point1.position.Y, point2.position.Y))
+	if (!RenderMath::IsNearlyFloat(point1.position.Y, point2.position.Y))
 	{
 		return;
 	}
@@ -392,7 +414,9 @@ void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
 				mCurrentTriangle->point1.UV * vertexWeight.X +
 				mCurrentTriangle->point2.UV * vertexWeight.Y +
 				mCurrentTriangle->point3.UV * vertexWeight.Z;
-			ColorRGB currentColor = mTextureHelper->GetPixelUV(currentUV);
+			ColorRGBA currentColor = mTextureHelper->GetPixelColor(currentUV);
+
+			currentColor = currentColor * RenderMath::NormalizeFloat(currentColor.alpha, 0, 255) +(mGDIHelper->GetPixelColor(static_cast<int>(currentPoint.X), static_cast<int>(currentPoint.Y)) * (1.0f - RenderMath::NormalizeFloat(currentColor.alpha, 0, 255)));
 
 			mGDIHelper->SetColor(currentColor);
 
@@ -403,7 +427,7 @@ void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
 			Vector3 currentPoint = RenderMath::Vector3Set(i, point1.position.Y, 1.0f);
 
 			Vector3 vertexWeight = mCurrentTriangle->GetVertexWeight(currentPoint);
-			ColorRGB currentColor =
+			ColorRGBA currentColor =
 				mCurrentTriangle->point1.Color * vertexWeight.X +
 				mCurrentTriangle->point2.Color * vertexWeight.Y +
 				mCurrentTriangle->point3.Color * vertexWeight.Z;

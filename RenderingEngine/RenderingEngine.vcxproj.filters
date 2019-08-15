@@ -60,7 +60,7 @@
     <ClInclude Include="Source\Engine\SoftRenderer\ViewCamera.h">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\SoftRenderer\Mesh.h">
+    <ClInclude Include="Source\Engine\SoftRenderer\Object.h">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -92,7 +92,7 @@
     <ClCompile Include="Source\Engine\SoftRenderer\ViewCamera.cpp">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\SoftRenderer\Mesh.cpp">
+    <ClCompile Include="Source\Engine\SoftRenderer\Object.cpp">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
   </ItemGroup>

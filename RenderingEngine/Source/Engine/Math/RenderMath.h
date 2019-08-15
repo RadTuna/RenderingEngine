@@ -73,19 +73,20 @@ struct Matrix3x3
 	Matrix3x3 operator-(const Matrix3x3& Other) const;
 };
 
-struct ColorRGB
+struct ColorRGBA
 {
-	BYTE Red;
-	BYTE Green;
-	BYTE Blue;
+	BYTE red;
+	BYTE green;
+	BYTE blue;
+	BYTE alpha;
 
-	ColorRGB();
-	ColorRGB(BYTE inRed, BYTE inGreen, BYTE inBlue);
-	void SetRGB(BYTE inRed, BYTE inGreen, BYTE inBlue);
-	ColorRGB operator*(const ColorRGB& Other) const;
-	ColorRGB operator*(const float& Other) const;
-	ColorRGB operator+(const ColorRGB& Other) const;
-	ColorRGB operator-(const ColorRGB& Other) const;
+	ColorRGBA();
+	ColorRGBA(BYTE inRed, BYTE inGreen, BYTE inBlue, BYTE inAlpha);
+	void SetRGB(BYTE inRed, BYTE inGreen, BYTE inBlue, BYTE inAlpha);
+	ColorRGBA operator*(const ColorRGBA& Other) const;
+	ColorRGBA operator*(const float& Other) const;
+	ColorRGBA operator+(const ColorRGBA& Other) const;
+	ColorRGBA operator-(const ColorRGBA& Other) const;
 };
 
 class RenderMath
@@ -110,11 +111,12 @@ public:
 	static IntPoint2D Vector2toIntPoint2D(const Vector2& inVector);
 	static IntPoint2D Vector3toIntPoint2D(const Vector3& inVector);
 	static constexpr float GetConvertRadianValue();
-	static bool IsNearestFloat(float valueA, float valueB, float tolerance = KINDA_SMALL_NUMBER);
+	static bool IsNearlyFloat(float valueA, float valueB, float tolerance = KINDA_SMALL_NUMBER);
+	static float NormalizeFloat(float target, float min, float max);
 
 	static void SortVecticesByY(struct Triangle* Vertices);
 
-	static ColorRGB ColorRGBSet(BYTE inRed, BYTE inGreen, BYTE inBlue);
+	static ColorRGBA ColorRGBASet(BYTE inRed, BYTE inGreen, BYTE inBlue, BYTE inAlpha);
 
 public:
 

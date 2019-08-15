@@ -1,13 +1,13 @@
 
-#include "Engine/SoftRenderer/Mesh.h"
+#include "Engine/SoftRenderer/Object.h"
 
-Mesh::Mesh()
+Object::Object()
 {
 	mTriangleList = nullptr;
 	mVerticesCount = 0;
 }
 
-Mesh::~Mesh()
+Object::~Object()
 {
 	if (mTriangleList != nullptr)
 	{
@@ -16,7 +16,7 @@ Mesh::~Mesh()
 	}
 }
 
-bool Mesh::Initialize(Triangle* triangleList, int verticesCount)
+bool Object::Initialize(Triangle* triangleList, int verticesCount)
 {
 	mTriangleList = new Triangle[verticesCount];
 	if (mTriangleList == nullptr)
@@ -34,7 +34,7 @@ bool Mesh::Initialize(Triangle* triangleList, int verticesCount)
 	return true;
 }
 
-void Mesh::Release()
+void Object::Release()
 {
 	if (mTriangleList != nullptr)
 	{
@@ -43,26 +43,40 @@ void Mesh::Release()
 	}
 }
 
-void Mesh::SetLocation(const Vector3& location)
+void Object::SetLocation(const Vector3& location)
 {
 	mLocation = location;
 }
 
-void Mesh::SetRotation(const float rotation)
+void Object::SetRotation(const float rotation)
 {
 	mRotation = rotation;
 }
 
-void Mesh::SetScale(const Vector3& scale)
+void Object::SetScale(const Vector3& scale)
 {
 	mScale = scale;
 }
 
-void Mesh::SetTransform(const Vector3& location, const float rotation, const Vector3& scale)
+void Object::SetTransform(const Vector3& location, const float rotation, const Vector3& scale)
 {
 	SetLocation(location);
 	SetRotation(rotation);
 	SetScale(scale);
+}
+
+void Object::DeepCopy(Object* target)
+{
+	if (target->GetTriangleList() != nullptr)
+	{
+		target->Release();
+	}
+
+	target->Initialize(mTriangleList, mVerticesCount);
+
+	target->SetLocation(mLocation);
+	target->SetRotation(mRotation);
+	target->SetScale(mScale);
 }
 
 void Triangle::Initialize()

@@ -17,8 +17,9 @@ public:
 	void ReleaseGDI(HWND hWnd);
 
 	void SetColor(BYTE r, BYTE g, BYTE b);
-	void SetColor(struct ColorRGB rgb);
+	void SetColor(struct ColorRGBA rgb);
 	void SetColor(ULONG color);
+	ColorRGBA GetPixelColor(int x, int y);
 	void Clear();
 	void BufferSwap();
 

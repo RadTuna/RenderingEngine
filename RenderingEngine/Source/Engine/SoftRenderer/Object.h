@@ -7,7 +7,7 @@
 struct Vertex
 {
 	Vector3 position;
-	ColorRGB Color;
+	ColorRGBA Color;
 	Vector2 UV;
 };
 
@@ -36,12 +36,12 @@ private:
 
 };
 
-class Mesh
+class Object
 {
 public:
 
-	Mesh();
-	~Mesh();
+	Object();
+	~Object();
 
 	bool Initialize(Triangle* triangleList, int verticesCount);
 	void Release();
@@ -49,6 +49,7 @@ public:
 	void SetRotation(const float rotation);
 	void SetScale(const Vector3& scale);
 	void SetTransform(const Vector3& location, const float rotation, const Vector3& scale);
+	void DeepCopy(Object* target);
 
 private:
 

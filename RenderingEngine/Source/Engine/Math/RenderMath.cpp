@@ -1,6 +1,6 @@
 
 #include "RenderMath.h"
-#include "Engine/SoftRenderer/Mesh.h"
+#include "Engine/SoftRenderer/Object.h"
 
 
 void RenderMath::MatrixMul(Matrix2x2* outMat, const Matrix2x2& inMat)
@@ -138,7 +138,7 @@ constexpr float RenderMath::GetConvertRadianValue()
 	return 360.0f / (static_cast<float>(M_PI) * 2.0f);
 }
 
-bool RenderMath::IsNearestFloat(float valueA, float valueB, float tolerance)
+bool RenderMath::IsNearlyFloat(float valueA, float valueB, float tolerance)
 {
 	if (abs(valueA - valueB) < tolerance)
 	{
@@ -148,6 +148,16 @@ bool RenderMath::IsNearestFloat(float valueA, float valueB, float tolerance)
 	{
 		return false;
 	}
+}
+
+float RenderMath::NormalizeFloat(float target, float min, float max)
+{
+	if (target < min || target > max || min >= max)
+	{
+		return target;
+	}
+
+	return (target - min) / (max - min);
 }
 
 void RenderMath::SortVecticesByY(Triangle* vertices)
@@ -189,9 +199,9 @@ void RenderMath::SortVecticesByY(Triangle* vertices)
 	return;
 }
 
-ColorRGB RenderMath::ColorRGBSet(BYTE inRed, BYTE inGreen, BYTE inBlue)
+ColorRGBA RenderMath::ColorRGBASet(BYTE inRed, BYTE inGreen, BYTE inBlue, BYTE inAlpha)
 {
-	ColorRGB temp = { inRed, inGreen, inBlue };
+	ColorRGBA temp = { inRed, inGreen, inBlue, inAlpha };
 	return temp;
 }
 
@@ -263,66 +273,70 @@ Vector3 Vector3::operator*(const float& Other) const
 	return temp;
 }
 
-ColorRGB::ColorRGB()
+ColorRGBA::ColorRGBA()
 {
-	Red = 0; Green = 0; Blue = 0;
+	red = 0; green = 0; blue = 0; alpha = 0;
 }
 
-ColorRGB::ColorRGB(BYTE inRed, BYTE inGreen, BYTE inBlue)
+ColorRGBA::ColorRGBA(BYTE inRed, BYTE inGreen, BYTE inBlue, BYTE inAlpha)
 {
-	Red = inRed; Green = inGreen; Blue = inBlue;
+	red = inRed; green = inGreen; blue = inBlue; alpha = inAlpha;
 }
 
-ColorRGB ColorRGB::operator*(const ColorRGB& Other) const
+ColorRGBA ColorRGBA::operator*(const ColorRGBA& Other) const
 {
-	ColorRGB temp;
+	ColorRGBA temp;
 	BYTE minByte = 0;
 	BYTE maxByte = 255;
 
-	temp.Red = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Red * Other.Red), minByte, maxByte);
-	temp.Green = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Green * Other.Green), minByte, maxByte);
-	temp.Blue = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Blue * Other.Blue), minByte, maxByte);
+	temp.red = RenderMath::Clamp<BYTE>(static_cast<BYTE>(red * Other.red), minByte, maxByte);
+	temp.green = RenderMath::Clamp<BYTE>(static_cast<BYTE>(green * Other.green), minByte, maxByte);
+	temp.blue = RenderMath::Clamp<BYTE>(static_cast<BYTE>(blue * Other.blue), minByte, maxByte);
+	temp.alpha = RenderMath::Clamp<BYTE>(static_cast<BYTE>(alpha * Other.alpha), minByte, maxByte);
 	return temp;
 }
 
-ColorRGB ColorRGB::operator*(const float& Other) const
+ColorRGBA ColorRGBA::operator*(const float& Other) const
 {
-	ColorRGB temp;
+	ColorRGBA temp;
 	BYTE minByte = 0;
 	BYTE maxByte = 255;
 
-	temp.Red = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Red * Other), minByte, maxByte);
-	temp.Green = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Green * Other), minByte, maxByte);
-	temp.Blue = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Blue * Other), minByte, maxByte);
+	temp.red = RenderMath::Clamp<BYTE>(static_cast<BYTE>(red * Other), minByte, maxByte);
+	temp.green = RenderMath::Clamp<BYTE>(static_cast<BYTE>(green * Other), minByte, maxByte);
+	temp.blue = RenderMath::Clamp<BYTE>(static_cast<BYTE>(blue * Other), minByte, maxByte);
+	temp.alpha = RenderMath::Clamp<BYTE>(static_cast<BYTE>(alpha * Other), minByte, maxByte);
 	return temp;
 }
-ColorRGB ColorRGB::operator+(const ColorRGB& Other) const
+ColorRGBA ColorRGBA::operator+(const ColorRGBA& Other) const
 {
-	ColorRGB temp;
+	ColorRGBA temp;
 	BYTE minByte = 0;
 	BYTE maxByte = 255;
 
-	temp.Red = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Red + Other.Red), minByte, maxByte);
-	temp.Green = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Green + Other.Green), minByte, maxByte);
-	temp.Blue = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Blue + Other.Blue), minByte, maxByte);
+	temp.red = RenderMath::Clamp<BYTE>(static_cast<BYTE>(red + Other.red), minByte, maxByte);
+	temp.green = RenderMath::Clamp<BYTE>(static_cast<BYTE>(green + Other.green), minByte, maxByte);
+	temp.blue = RenderMath::Clamp<BYTE>(static_cast<BYTE>(blue + Other.blue), minByte, maxByte);
+	temp.alpha = RenderMath::Clamp<BYTE>(static_cast<BYTE>(alpha + Other.alpha), minByte, maxByte);
 	return temp;
 }
 
-ColorRGB ColorRGB::operator-(const ColorRGB& Other) const
+ColorRGBA ColorRGBA::operator-(const ColorRGBA& Other) const
 {
-	ColorRGB temp;
+	ColorRGBA temp;
 	BYTE minByte = 0;
 	BYTE maxByte = 255;
 
-	temp.Red = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Red - Other.Red), minByte, maxByte);
-	temp.Green = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Green - Other.Green), minByte, maxByte);
-	temp.Blue = RenderMath::Clamp<BYTE>(static_cast<BYTE>(Blue - Other.Blue), minByte, maxByte);
+	temp.red = RenderMath::Clamp<BYTE>(static_cast<BYTE>(red - Other.red), minByte, maxByte);
+	temp.green = RenderMath::Clamp<BYTE>(static_cast<BYTE>(green - Other.green), minByte, maxByte);
+	temp.blue = RenderMath::Clamp<BYTE>(static_cast<BYTE>(blue - Other.blue), minByte, maxByte);
+	temp.alpha = RenderMath::Clamp<BYTE>(static_cast<BYTE>(alpha - Other.alpha), minByte, maxByte);
 	return temp;
 }
 
-void ColorRGB::SetRGB(BYTE inRed, BYTE inGreen, BYTE inBlue)
+void ColorRGBA::SetRGB(BYTE inRed, BYTE inGreen, BYTE inBlue, BYTE inAlpha)
 {
-	Red = inRed; Green = inGreen; Blue = inBlue;
+	red = inRed; green = inGreen; blue = inBlue; alpha = inAlpha;
 }
 
 Matrix2x2 Matrix2x2::GetIdentity()
