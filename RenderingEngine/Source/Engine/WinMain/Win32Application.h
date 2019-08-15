@@ -25,7 +25,7 @@ private:
 	HINSTANCE m_hInstance;
 	class GDIHelper* mGDIHelper;
 	class SoftRenderer* mSoftRenderer;
-	class FPSCounter* mFPSCounter;
+	class TimeCounter* mTimeCounter;
 
 public:
 

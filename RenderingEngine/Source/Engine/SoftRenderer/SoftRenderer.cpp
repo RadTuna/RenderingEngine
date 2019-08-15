@@ -170,7 +170,7 @@ void SoftRenderer::PutPixel(IntPoint2D inPoint)
 	PutPixel(inPoint.X, inPoint.Y);
 }
 
-void SoftRenderer::UpdateFrame()
+void SoftRenderer::UpdateFrame(float deltaTime)
 {
 	Vector3 points[4];
 	ColorRGBA Color;
@@ -194,8 +194,8 @@ void SoftRenderer::UpdateFrame()
 	mDraw2DManager->DrawLine(points[2], points[0], Color, false);
 
 	// DrawTriangle
-	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + RenderMath::Vector3Set(-0.5f, -0.5f, 0.0f));
-	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + 2.0f);
+	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + (RenderMath::Vector3Set(-5.0f, -5.0f, 0.0f) * deltaTime));
+	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + (50.0f * deltaTime));
 	mDraw2DManager->DrawMesh(mViewCamera->GetViewMatrix());
 
 	// Buffer Swap 

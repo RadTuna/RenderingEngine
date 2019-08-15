@@ -22,7 +22,7 @@
     <Filter Include="Engine\Math">
       <UniqueIdentifier>{680d494b-cdac-4fa4-8fd1-ced475544a6d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Profiler">
+    <Filter Include="Engine\Timer">
       <UniqueIdentifier>{ad2e8991-8e0d-4cb0-bcbb-f54cbbe65965}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -54,14 +54,14 @@
     <ClInclude Include="Source\Engine\SoftRenderer\TextureHelper.h">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Profiler\FPSCounter.h">
-      <Filter>Engine\Profiler</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\SoftRenderer\ViewCamera.h">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\SoftRenderer\Object.h">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Timer\TimeCounter.h">
+      <Filter>Engine\Timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -86,14 +86,14 @@
     <ClCompile Include="Source\Engine\SoftRenderer\TextureHelper.cpp">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Engine\Profiler\FPSCounter.cpp">
-      <Filter>Engine\Profiler</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Engine\SoftRenderer\ViewCamera.cpp">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\SoftRenderer\Object.cpp">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Timer\TimeCounter.cpp">
+      <Filter>Engine\Timer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

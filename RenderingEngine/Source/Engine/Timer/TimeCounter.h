@@ -3,12 +3,12 @@
 #include <windows.h>
 
 
-class FPSCounter
+class TimeCounter
 {
 public:
 
-	FPSCounter();
-	~FPSCounter();
+	TimeCounter();
+	~TimeCounter();
 
 	bool Initialize();
 	void Frame();
@@ -19,11 +19,11 @@ private:
 	__int64 mStartTime;
 	float mTickPerMs;
 	float mFrameTime;
-	int mFramePerSecond;
-	int mCount;
+	float mFramePerSecond;
 
 public:
 
-	inline int GetFPS() { return mFramePerSecond; }
+	inline float GetFPS() { return mFramePerSecond; }
+	inline float GetDeltaTime() { return mFrameTime; }
 
 };

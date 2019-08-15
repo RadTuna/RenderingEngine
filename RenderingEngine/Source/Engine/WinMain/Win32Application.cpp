@@ -3,7 +3,7 @@
 #include "Win32Application.h"
 #include "Engine/SoftRenderer/GDIHelper.h"
 #include "Engine/SoftRenderer/SoftRenderer.h"
-#include "Engine/Profiler/FPSCounter.h"
+#include "Engine/Timer/TimeCounter.h"
 
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -18,10 +18,10 @@ Win32Application::Win32Application()
 
 Win32Application::~Win32Application()
 {
-	if (mFPSCounter != nullptr)
+	if (mTimeCounter != nullptr)
 	{
-		delete mFPSCounter;
-		mFPSCounter = nullptr;
+		delete mTimeCounter;
+		mTimeCounter = nullptr;
 	}
 
 	if (mSoftRenderer != nullptr)
@@ -116,13 +116,13 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 		return 0;
 	}
 
-	mFPSCounter = new FPSCounter;
-	if (mFPSCounter == nullptr)
+	mTimeCounter = new TimeCounter;
+	if (mTimeCounter == nullptr)
 	{
 		return 0;
 	}
 
-	InitResult = mFPSCounter->Initialize();
+	InitResult = mTimeCounter->Initialize();
 	if (InitResult == false)
 	{
 		return 0;
@@ -142,11 +142,11 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 			// SomWorks :D // SoftRender 메인 업데이트
 			WCHAR titleString[100];
 
-			mFPSCounter->Frame();
+			mTimeCounter->Frame();
 
-			mSoftRenderer->UpdateFrame();
+			mSoftRenderer->UpdateFrame(mTimeCounter->GetDeltaTime() / 1000.0f);
 
-			swprintf_s(titleString, 100, L"%s  /  FPS: %d", SomTitle, mFPSCounter->GetFPS());
+			swprintf_s(titleString, 100, L"%s  / FPS: %.2f / Time: %.2fms", SomTitle, mTimeCounter->GetFPS(), mTimeCounter->GetDeltaTime());
 
 			SetWindowTextW(m_hwnd, titleString);
 		}
@@ -156,10 +156,10 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 		}
 	}
 
-	if (mFPSCounter != nullptr)
+	if (mTimeCounter != nullptr)
 	{
-		delete mFPSCounter;
-		mFPSCounter = nullptr;
+		delete mTimeCounter;
+		mTimeCounter = nullptr;
 	}
 
 	if (mSoftRenderer != nullptr)
@@ -237,8 +237,8 @@ LRESULT CALLBACK Win32Application::MessageHandler(HWND hWnd, UINT message, WPARA
 		delete mSoftRenderer;
 		mSoftRenderer = nullptr;
 
-		delete mFPSCounter;
-		mFPSCounter = nullptr;
+		delete mTimeCounter;
+		mTimeCounter = nullptr;
 
 		break;
 
