@@ -39,9 +39,6 @@
     <ClInclude Include="Source\Engine\SoftRenderer\GDIHelper.h">
       <Filter>Engine\Renderer\SoftRenderer\GDI</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\SoftRenderer\Draw2DManager.h">
-      <Filter>Engine\Renderer\SoftRenderer</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\SoftRenderer\SoftRenderer.h">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClInclude>
@@ -63,6 +60,9 @@
     <ClInclude Include="Source\Engine\Timer\TimeCounter.h">
       <Filter>Engine\Timer</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\SoftRenderer\Draw3DManager.h">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\WinMain\Win32Application.cpp">
@@ -70,9 +70,6 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\WinMain\WinMain.cpp">
       <Filter>Engine\WinMain</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\SoftRenderer\Draw2DManager.cpp">
-      <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\SoftRenderer\SoftRenderer.cpp">
       <Filter>Engine\Renderer\SoftRenderer</Filter>
@@ -94,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Timer\TimeCounter.cpp">
       <Filter>Engine\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\SoftRenderer\Draw3DManager.cpp">
+      <Filter>Engine\Renderer\SoftRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

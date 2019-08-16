@@ -6,29 +6,42 @@
 
 struct Vertex
 {
-	Vector3 position;
+	Vector4 position;
 	ColorRGBA Color;
 	Vector2 UV;
 };
 
 struct Triangle
 {
-
 	Vertex point1;
 	Vertex point2;
 	Vertex point3;
+};
+
+struct Vertex2D
+{
+	Vector2 position;
+	ColorRGBA Color;
+	Vector2 UV;
+};
+
+struct Triangle2D
+{
+
+	Vertex2D point1;
+	Vertex2D point2;
+	Vertex2D point3;
 
 public:
 
 	void Initialize();
-
-	Vector3 GetVertexWeight(Vector3& inPoint);
+	Vector3 GetVertexWeight(Vector2& inPoint);
 
 private:
 
-	Vector3 mVectorU;
-	Vector3 mVectorV;
-	Vector3 mVectorW;
+	Vector2 mVectorU;
+	Vector2 mVectorV;
+	Vector2 mVectorW;
 	float mWeightDenominator;
 	float mDotUV;
 	float mDotUU;
@@ -45,26 +58,26 @@ public:
 
 	bool Initialize(Triangle* triangleList, int verticesCount);
 	void Release();
-	void SetLocation(const Vector3& location);
+	void SetLocation(const Vector4& location);
 	void SetRotation(const float rotation);
-	void SetScale(const Vector3& scale);
-	void SetTransform(const Vector3& location, const float rotation, const Vector3& scale);
+	void SetScale(const Vector4& scale);
+	void SetTransform(const Vector4& location, const float rotation, const Vector4& scale);
 	void DeepCopy(Object* target);
 
 private:
 
-	Triangle* mTriangleList;
+	Triangle* mMesh;
 	int mVerticesCount;
-	Vector3 mLocation;
+	Vector4 mLocation;
 	float mRotation;
-	Vector3 mScale;
+	Vector4 mScale;
 
 public:
 
-	inline Vector3 GetLocation() const { return mLocation; }
+	inline Vector4 GetLocation() const { return mLocation; }
 	inline float GetRotation() const { return mRotation; }
-	inline Vector3 GetScale() const { return mScale; }
-	inline Triangle* GetTriangleList() const { return mTriangleList; }
+	inline Vector4 GetScale() const { return mScale; }
+	inline Triangle* GetTriangleList() const { return mMesh; }
 	inline int GetVerticesCount() const { return mVerticesCount; }
 
 };

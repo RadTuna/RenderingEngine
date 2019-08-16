@@ -13,19 +13,25 @@ public:
 
 	bool Initialize();
 	void Release();
-	void SetLocation(struct Vector3& location);
-	void SetRotation(float rotation);
+	void SetLocation(struct Vector4& location);
+	void SetRotation(struct Vector4& rotation);
 	void CalculrateViewMatrix();
+	void CalcularateProjectionMatrix(float screenWidth, float screenHeight, float nearDistance, float farDistance);
 
 private:
 
-	struct Matrix3x3* mViewMatrix;
+	struct Matrix4x4* mViewMatrix;
+	struct Matrix4x4* mProjectionMatrix;
 	float mLocationX;
 	float mLocationY;
-	float mRotation;
+	float mLocationZ;
+	float mRotationX;
+	float mRotationY;
+	float mRotationZ;
 
 public:
 
-	inline Matrix3x3& GetViewMatrix() const { return *mViewMatrix; }
+	inline Matrix4x4& GetViewMatrix() const { return *mViewMatrix; }
+	inline Matrix4x4& GetProjectionMatrix() const { return *mProjectionMatrix; }
 
 };

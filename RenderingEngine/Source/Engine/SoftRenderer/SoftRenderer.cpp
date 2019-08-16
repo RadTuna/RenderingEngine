@@ -2,7 +2,7 @@
 #include "SoftRenderer.h"
 #include "Engine/Math/RenderMath.h"
 #include "Engine/SoftRenderer/GDIHelper.h"
-#include "Engine/SoftRenderer/Draw2DManager.h"
+#include "Engine/SoftRenderer/Draw3DManager.h"
 #include "Engine/SoftRenderer/Object.h"
 #include "Engine/SoftRenderer/ViewCamera.h"
 
@@ -50,7 +50,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 	mhWnd = hWnd;
 
 
-	mDraw2DManager = new class Draw2DManager;
+	mDraw2DManager = new class Draw3DManager;
 	if (mDraw2DManager == nullptr)
 	{
 		return false;
@@ -105,6 +105,8 @@ bool SoftRenderer::SetRenderParameter()
 	bool Result;
 	Triangle* vertices;
 
+	// 2D Render 관련 파라미터 설정.
+
 	// 카메라 위치, 회전을 설정.
 	Vector3 cameraLocation = RenderMath::Vector3Set(0.0f, 0.0f, 0.0f);
 	float cameraRotation = 0.0f;
@@ -115,7 +117,7 @@ bool SoftRenderer::SetRenderParameter()
 
 
 	// 트라이앵글리스트를 DrawManager에 등록
-	int vertexCount = 1;
+	int vertexCount = 2;
 
 	vertices = new Triangle[vertexCount];
 	if (vertices == nullptr)
@@ -123,19 +125,31 @@ bool SoftRenderer::SetRenderParameter()
 		return false;
 	}
 
-	vertices[0].point1.position = RenderMath::Vector3Set(0, 100, 1);
+	vertices[0].point1.position = RenderMath::Vector3Set(-50, 50, 1);
 	vertices[0].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
-	vertices[0].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
+	vertices[0].point1.UV = RenderMath::Vector2Set(0.0f, 0.0f);
 
-	vertices[0].point2.position = RenderMath::Vector3Set(-100, -100, 1);
+	vertices[0].point2.position = RenderMath::Vector3Set(50, 50, 1);
 	vertices[0].point2.Color = RenderMath::ColorRGBASet(0, 255, 0, 255);
-	vertices[0].point2.UV = RenderMath::Vector2Set(0.0f, 1.0f);
+	vertices[0].point2.UV = RenderMath::Vector2Set(1.0f, 0.0f);
 
-	vertices[0].point3.position = RenderMath::Vector3Set(100, -100, 1);
+	vertices[0].point3.position = RenderMath::Vector3Set(-50, -50, 1);
 	vertices[0].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
-	vertices[0].point3.UV = RenderMath::Vector2Set(1.0f, 1.0f);
+	vertices[0].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
 
-	Result = mDraw2DManager->GenerateMesh(vertices, vertexCount);
+	vertices[1].point1.position = RenderMath::Vector3Set(50, 50, 1);
+	vertices[1].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
+	vertices[1].point1.UV = RenderMath::Vector2Set(1.0f, 0.0f);
+
+	vertices[1].point2.position = RenderMath::Vector3Set(50, -50, 1);
+	vertices[1].point2.Color = RenderMath::ColorRGBASet(0, 255, 0, 255);
+	vertices[1].point2.UV = RenderMath::Vector2Set(1.0f, 1.0f);
+
+	vertices[1].point3.position = RenderMath::Vector3Set(-50, -50, 1);
+	vertices[1].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
+	vertices[1].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
+
+	Result = mDraw2DManager->GenerateObject(vertices, vertexCount);
 	if (Result == false)
 	{
 		return false;
@@ -175,13 +189,13 @@ void SoftRenderer::UpdateFrame(float deltaTime)
 	Vector3 points[4];
 	ColorRGBA Color;
 
-	points[0] = RenderMath::Vector3Set(-295, 130, 1);
-	points[1] = RenderMath::Vector3Set(225, 110, 1);
-	points[2] = RenderMath::Vector3Set(-115, -110, 1);
-	points[3] = RenderMath::Vector3Set(115, -110, 1);
+	points[0] = RenderMath::Vector3Set(-100, 100, 1);
+	points[1] = RenderMath::Vector3Set(100, 100, 1);
+	points[2] = RenderMath::Vector3Set(-100, -100, 1);
+	points[3] = RenderMath::Vector3Set(100, -100, 1);
 
 	// Buffer Clear
-	mGDIHelper->SetColor(255, 255, 255);
+	mGDIHelper->SetColor(0, 100, 150);
 	mGDIHelper->Clear();
 
 	// Set DrawColor
@@ -194,9 +208,9 @@ void SoftRenderer::UpdateFrame(float deltaTime)
 	mDraw2DManager->DrawLine(points[2], points[0], Color, false);
 
 	// DrawTriangle
-	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + (RenderMath::Vector3Set(-5.0f, -5.0f, 0.0f) * deltaTime));
-	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + (50.0f * deltaTime));
-	mDraw2DManager->DrawMesh(mViewCamera->GetViewMatrix());
+	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + (RenderMath::Vector3Set(-30.0f, 0.0f, 0.0f) * deltaTime));
+	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + (100.0f * deltaTime));
+	mDraw2DManager->DrawObject(mViewCamera->GetViewMatrix());
 
 	// Buffer Swap 
 	mGDIHelper->BufferSwap();

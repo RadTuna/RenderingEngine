@@ -1,5 +1,5 @@
 
-#include "Draw2DManager.h"
+#include "Draw3DManager.h"
 #include "Engine/SoftRenderer/GDIHelper.h"
 #include "Engine/SoftRenderer/SoftRenderer.h"
 #include "Engine/Math/RenderMath.h"
@@ -10,7 +10,7 @@
 #define GetEndLoc(expr) ((expr) ? abs(startLoc.X - endLoc.X) : abs(startLoc.Y - endLoc.Y))
 #define CheckZero(expr, num) ((expr) ? num + 1 : num)
 
-Draw2DManager::Draw2DManager()
+Draw3DManager::Draw3DManager()
 {
 	mGDIHelper = nullptr;
 	mSoftRenderer = nullptr;
@@ -20,7 +20,7 @@ Draw2DManager::Draw2DManager()
 	mCurrentObjectIndex = 0;
 }
 
-Draw2DManager::~Draw2DManager()
+Draw3DManager::~Draw3DManager()
 {
 	if (mObjectList != nullptr)
 	{
@@ -41,7 +41,7 @@ Draw2DManager::~Draw2DManager()
 	}
 }
 
-bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGDIHelper, const char* filename)
+bool Draw3DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGDIHelper, const char* filename)
 {
 	if (initSoftRenderer == nullptr)
 	{
@@ -78,7 +78,7 @@ bool Draw2DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGD
 	return true;
 }
 
-void Draw2DManager::Release()
+void Draw3DManager::Release()
 {
 	if (mObjectList != nullptr)
 	{
@@ -99,7 +99,7 @@ void Draw2DManager::Release()
 	}
 }
 
-void Draw2DManager::DrawLine(Vector3& startLoc, Vector3& endLoc, ColorRGBA& rgb, bool useAntiAliase)
+void Draw3DManager::DrawLine(Vector3& startLoc, Vector3& endLoc, ColorRGBA& rgb, bool useAntiAliase)
 {
 	mGDIHelper->SetColor(rgb);
 
@@ -205,7 +205,7 @@ void Draw2DManager::DrawLine(Vector3& startLoc, Vector3& endLoc, ColorRGBA& rgb,
 	return;
 }
 
-void Draw2DManager::GetYLocation(float width, float height, float inX, float* outY)
+void Draw3DManager::GetYLocation(float width, float height, float inX, float* outY)
 {
 	// 정수 연산을 사용하는 기존의 수식 (안티 앨리어싱이 힘듬)
 	if (width * (*outY) + -height * inX > 0)
@@ -217,7 +217,7 @@ void Draw2DManager::GetYLocation(float width, float height, float inX, float* ou
 	return;
 }
 
-void Draw2DManager::GetYLocationf(float width, float height, float inX, float* outY, float* upWeight)
+void Draw3DManager::GetYLocationf(float width, float height, float inX, float* outY, float* upWeight)
 {
 	// 부동소수점 연산을 사용하는 새로운 수식 (안티 앨리어싱 쉬움, 퍼포먼스 떨어짐)
 	float inclination = height / width;
@@ -234,14 +234,14 @@ void Draw2DManager::GetYLocationf(float width, float height, float inX, float* o
 	return;
 }
 
-void Draw2DManager::TransformTriangle(Triangle& vertices)
+void Draw3DManager::TransformTriangle(Triangle& vertices)
 {
 	RenderMath::MatrixMul(&vertices.point1.position, *mTransformMatrix);
 	RenderMath::MatrixMul(&vertices.point2.position, *mTransformMatrix);
 	RenderMath::MatrixMul(&vertices.point3.position, *mTransformMatrix);
 }
 
-bool Draw2DManager::GenerateMesh(struct Triangle* vertices, int vertexCount)
+bool Draw3DManager::GenerateObject(struct Triangle* vertices, int vertexCount)
 {
 	bool Result;
 
@@ -278,64 +278,68 @@ bool Draw2DManager::GenerateMesh(struct Triangle* vertices, int vertexCount)
 	return true;
 }
 
-void Draw2DManager::ClearMesh()
+void Draw3DManager::ClearObject()
 {
 	mObjectList[mCurrentObjectIndex].Release();
 
 	mCurrentObjectIndex--;
 }
 
-void Draw2DManager::DrawMesh(const Matrix3x3& viewMatrix)
+void Draw3DManager::DrawObject(const Matrix4x4& viewMatrix)
 {
 	for (int i = 0; i < mCurrentObjectIndex; ++i)
 	{
 		*mTransformMatrix = RenderMath::GetTransformMatrix3x3(mObjectList[i].GetLocation(), mObjectList[i].GetRotation(), mObjectList[i].GetScale());
 		RenderMath::MatrixMul(mTransformMatrix, viewMatrix);
-		DrawTriangleList(mObjectList[i].GetTriangleList(), mObjectList[i].GetVerticesCount());
+		DrawMesh(mObjectList[i].GetTriangleList(), mObjectList[i].GetVerticesCount());
 	}
 }
 
-void Draw2DManager::DrawTriangleList(Triangle* triangleList, int verticesCount)
+void Draw3DManager::DrawMesh(Triangle* triangleList, int verticesCount)
 {
 	for (int i = 0; i < verticesCount; ++i)
 	{
-		DrawTriangle(triangleList[i]);
+		ProcessVertexShader(triangleList[i]);
 	}
 }
 
-void Draw2DManager::DrawTriangle(Triangle vertices)
+void Draw3DManager::ProcessVertexShader(Triangle& vertices)
 {
-	mCurrentTriangle = &vertices;
+	// 임시로 Flow만 맞춰둠.
+	TriangleRasterize(/*Triangle2D Argument*/);
+}
 
-	TransformTriangle(vertices);
+void Draw3DManager::TriangleRasterize(Triangle2D& vertices)
+{
+	mCurrentTriangle2D = &vertices;
 
 	// 버텍스를 Y값 순으로 정렬함.
-	RenderMath::SortVecticesByY(&vertices);
+	SortVecticesByY(&vertices);
 
 	vertices.Initialize();
 
 	if (RenderMath::IsNearlyFloat(vertices.point2.position.Y, vertices.point3.position.Y))
 	{
-		DrawBottomTriangle(vertices.point1, vertices.point2, vertices.point3);
+		RasterizeBottomTriangle(vertices.point1, vertices.point2, vertices.point3);
 	}
 	else if (RenderMath::IsNearlyFloat(vertices.point1.position.Y, vertices.point2.position.Y))
 	{
-		DrawTopTriangle(vertices.point1, vertices.point2, vertices.point3);
+		RasterizeTopTriangle(vertices.point1, vertices.point2, vertices.point3);
 	}
 	else
 	{
-		Vertex NewVertex;
+		Vertex2D NewVertex;
 		NewVertex.position.Y = vertices.point2.position.Y;
 		NewVertex.position.X = (vertices.point1.position.X + ((vertices.point2.position.Y - vertices.point1.position.Y) /
 			(vertices.point3.position.Y - vertices.point1.position.Y)) * (vertices.point3.position.X - vertices.point1.position.X));
-		DrawBottomTriangle(vertices.point1, vertices.point2, NewVertex);
-		DrawTopTriangle(vertices.point2, NewVertex, vertices.point3);
+		RasterizeBottomTriangle(vertices.point1, vertices.point2, NewVertex);
+		RasterizeTopTriangle(vertices.point2, NewVertex, vertices.point3);
 	}
 
 
 }
 
-void Draw2DManager::DrawBottomTriangle(Vertex point1, Vertex point2, Vertex point3)
+void Draw3DManager::RasterizeBottomTriangle(Vertex2D& point1, Vertex2D& point2, Vertex2D& point3)
 {
 	if (!RenderMath::IsNearlyFloat(point2.position.Y, point3.position.Y))
 	{
@@ -350,11 +354,11 @@ void Draw2DManager::DrawBottomTriangle(Vertex point1, Vertex point2, Vertex poin
 
 	for (int ScanLineY = (int)point1.position.Y; ScanLineY >= point2.position.Y; --ScanLineY)
 	{
-		Vertex TempVertex1;
-		Vertex TempVertex2;
+		Vertex2D TempVertex1;
+		Vertex2D TempVertex2;
 
-		TempVertex1.position = RenderMath::Vector3Set(StartPosX, ScanLineY, 1.0f);
-		TempVertex2.position = RenderMath::Vector3Set(EndPosX, ScanLineY, 1.0f);
+		TempVertex1.position = RenderMath::Vector2Set(StartPosX, ScanLineY);
+		TempVertex2.position = RenderMath::Vector2Set(EndPosX, ScanLineY);
 
 		DrawFlatLine(TempVertex1, TempVertex2);
 
@@ -365,7 +369,7 @@ void Draw2DManager::DrawBottomTriangle(Vertex point1, Vertex point2, Vertex poin
 	return;
 }
 
-void Draw2DManager::DrawTopTriangle(Vertex point1, Vertex point2, Vertex point3)
+void Draw3DManager::RasterizeTopTriangle(Vertex2D& point1, Vertex2D& point2, Vertex2D& point3)
 {
 	if (!RenderMath::IsNearlyFloat(point1.position.Y, point2.position.Y))
 	{
@@ -380,11 +384,11 @@ void Draw2DManager::DrawTopTriangle(Vertex point1, Vertex point2, Vertex point3)
 
 	for (int ScanLineY = (int)point3.position.Y; ScanLineY <= point1.position.Y; ++ScanLineY)
 	{
-		Vertex TempVertex1;
-		Vertex TempVertex2;
+		Vertex2D TempVertex1;
+		Vertex2D TempVertex2;
 
-		TempVertex1.position = RenderMath::Vector3Set(StartPosX, ScanLineY, 1.0f);
-		TempVertex2.position = RenderMath::Vector3Set(EndPosX, ScanLineY, 1.0f);
+		TempVertex1.position = RenderMath::Vector2Set(StartPosX, ScanLineY);
+		TempVertex2.position = RenderMath::Vector2Set(EndPosX, ScanLineY);
 
 		DrawFlatLine(TempVertex1, TempVertex2);
 
@@ -395,7 +399,7 @@ void Draw2DManager::DrawTopTriangle(Vertex point1, Vertex point2, Vertex point3)
 	return;
 }
 
-void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
+void Draw3DManager::DrawFlatLine(Vertex2D& point1, Vertex2D& point2)
 {
 	if (point1.position.Y != point2.position.Y)
 	{
@@ -404,38 +408,83 @@ void Draw2DManager::DrawFlatLine(Vertex point1, Vertex point2)
 	
 	for (int i = (int)RenderMath::GetMin(point1.position.X, point2.position.X); i <= RenderMath::GetMax(point1.position.X, point2.position.X); ++i)
 	{
+		// 포인트가 화면을 벗어나면 그리지 않음.
+		if (abs(i) >= SomWidth / 2 || abs(point1.position.Y) >= SomHeight / 2)
+		{
+			continue;
+		}
+
 		if (useTexture == true)
 		{
-			Vector3 currentPoint = RenderMath::Vector3Set(i, point1.position.Y, 1.0f);
+			Vector2 currentPoint = RenderMath::Vector2Set(i, point1.position.Y);
 
-			Vector3 vertexWeight = mCurrentTriangle->GetVertexWeight(currentPoint);
+			Vector3 vertexWeight = mCurrentTriangle2D->GetVertexWeight(currentPoint);
 
 			Vector2 currentUV = 
-				mCurrentTriangle->point1.UV * vertexWeight.X +
-				mCurrentTriangle->point2.UV * vertexWeight.Y +
-				mCurrentTriangle->point3.UV * vertexWeight.Z;
+				mCurrentTriangle2D->point1.UV * vertexWeight.X +
+				mCurrentTriangle2D->point2.UV * vertexWeight.Y +
+				mCurrentTriangle2D->point3.UV * vertexWeight.Z;
 			ColorRGBA currentColor = mTextureHelper->GetPixelColor(currentUV);
 
-			currentColor = currentColor * RenderMath::NormalizeFloat(currentColor.alpha, 0, 255) +(mGDIHelper->GetPixelColor(static_cast<int>(currentPoint.X), static_cast<int>(currentPoint.Y)) * (1.0f - RenderMath::NormalizeFloat(currentColor.alpha, 0, 255)));
+			currentColor = currentColor * RenderMath::NormalizeFloat(currentColor.alpha, 0, 255) + (mGDIHelper->GetPixelColor(static_cast<int>(currentPoint.X), static_cast<int>(currentPoint.Y)) * (1.0f - RenderMath::NormalizeFloat(currentColor.alpha, 0, 255)));
 
 			mGDIHelper->SetColor(currentColor);
 
-			mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(i, point1.position.Y));
+			mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(currentPoint.X, currentPoint.Y));
 		}
 		else
 		{
-			Vector3 currentPoint = RenderMath::Vector3Set(i, point1.position.Y, 1.0f);
+			Vector2 currentPoint = RenderMath::Vector2Set(i, point1.position.Y);
 
-			Vector3 vertexWeight = mCurrentTriangle->GetVertexWeight(currentPoint);
+			Vector3 vertexWeight = mCurrentTriangle2D->GetVertexWeight(currentPoint);
 			ColorRGBA currentColor =
-				mCurrentTriangle->point1.Color * vertexWeight.X +
-				mCurrentTriangle->point2.Color * vertexWeight.Y +
-				mCurrentTriangle->point3.Color * vertexWeight.Z;
+				mCurrentTriangle2D->point1.Color * vertexWeight.X +
+				mCurrentTriangle2D->point2.Color * vertexWeight.Y +
+				mCurrentTriangle2D->point3.Color * vertexWeight.Z;
 
 			mGDIHelper->SetColor(currentColor);
 
-			mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(i, point1.position.Y));
+			mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(currentPoint.X, currentPoint.Y));
+		}
+	}
+}
+
+void Draw3DManager::SortVecticesByY(Triangle2D* vertices)
+{
+	if (!((vertices->point1.position.Y >= vertices->point2.position.Y) && (vertices->point1.position.Y >= vertices->point3.position.Y)))
+	{
+		if (vertices->point2.position.Y > vertices->point3.position.Y)
+		{
+			std::swap(vertices->point1, vertices->point2);
+		}
+		else
+		{
+			std::swap(vertices->point1, vertices->point3);
 		}
 	}
 
+	if (vertices->point2.position.Y < vertices->point3.position.Y)
+	{
+		std::swap(vertices->point2, vertices->point3);
+	}
+
+
+	if (vertices->point1.position.Y == vertices->point2.position.Y)
+	{
+		if (vertices->point1.position.X > vertices->point1.position.X)
+		{
+			std::swap(vertices->point1, vertices->point2);
+		}
+	}
+
+	if (vertices->point2.position.Y == vertices->point3.position.Y)
+	{
+		if (vertices->point2.position.X > vertices->point3.position.X)
+		{
+			std::swap(vertices->point2, vertices->point3);
+		}
+	}
+
+	return;
 }
+

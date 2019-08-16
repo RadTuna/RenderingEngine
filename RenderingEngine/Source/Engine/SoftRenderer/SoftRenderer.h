@@ -24,7 +24,7 @@ private:
 private:
 
 	class GDIHelper* mGDIHelper;
-	class Draw2DManager* mDraw2DManager;
+	class Draw3DManager* mDraw2DManager;
 	class ViewCamera* mViewCamera;
 	HWND* mhWnd;
 

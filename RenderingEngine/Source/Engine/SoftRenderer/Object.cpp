@@ -3,30 +3,30 @@
 
 Object::Object()
 {
-	mTriangleList = nullptr;
+	mMesh = nullptr;
 	mVerticesCount = 0;
 }
 
 Object::~Object()
 {
-	if (mTriangleList != nullptr)
+	if (mMesh != nullptr)
 	{
-		delete[] mTriangleList;
-		mTriangleList = nullptr;
+		delete[] mMesh;
+		mMesh = nullptr;
 	}
 }
 
 bool Object::Initialize(Triangle* triangleList, int verticesCount)
 {
-	mTriangleList = new Triangle[verticesCount];
-	if (mTriangleList == nullptr)
+	mMesh = new Triangle[verticesCount];
+	if (mMesh == nullptr)
 	{
 		return false;
 	}
 
 	for (int i = 0; i < verticesCount; ++i)
 	{
-		mTriangleList[i] = triangleList[i];
+		mMesh[i] = triangleList[i];
 	}
 
 	mVerticesCount = verticesCount;
@@ -36,14 +36,14 @@ bool Object::Initialize(Triangle* triangleList, int verticesCount)
 
 void Object::Release()
 {
-	if (mTriangleList != nullptr)
+	if (mMesh != nullptr)
 	{
-		delete[] mTriangleList;
-		mTriangleList = nullptr;
+		delete[] mMesh;
+		mMesh = nullptr;
 	}
 }
 
-void Object::SetLocation(const Vector3& location)
+void Object::SetLocation(const Vector4& location)
 {
 	mLocation = location;
 }
@@ -53,12 +53,12 @@ void Object::SetRotation(const float rotation)
 	mRotation = rotation;
 }
 
-void Object::SetScale(const Vector3& scale)
+void Object::SetScale(const Vector4& scale)
 {
 	mScale = scale;
 }
 
-void Object::SetTransform(const Vector3& location, const float rotation, const Vector3& scale)
+void Object::SetTransform(const Vector4& location, const float rotation, const Vector4& scale)
 {
 	SetLocation(location);
 	SetRotation(rotation);
@@ -72,35 +72,35 @@ void Object::DeepCopy(Object* target)
 		target->Release();
 	}
 
-	target->Initialize(mTriangleList, mVerticesCount);
+	target->Initialize(mMesh, mVerticesCount);
 
 	target->SetLocation(mLocation);
 	target->SetRotation(mRotation);
 	target->SetScale(mScale);
 }
 
-void Triangle::Initialize()
+void Triangle2D::Initialize()
 {
 	mVectorU = point2.position - point1.position;
 	mVectorV = point3.position - point1.position;
 
-	mDotUU = RenderMath::HomoDotProduct(mVectorU, mVectorU);
-	mDotUV = RenderMath::HomoDotProduct(mVectorU, mVectorV);
-	mDotVV = RenderMath::HomoDotProduct(mVectorV, mVectorV);
+	mDotUU = RenderMath::DotProduct(mVectorU, mVectorU);
+	mDotUV = RenderMath::DotProduct(mVectorU, mVectorV);
+	mDotVV = RenderMath::DotProduct(mVectorV, mVectorV);
 
-	mWeightDenominator = mDotUU * RenderMath::HomoDotProduct(mVectorV, mVectorV) - mDotUV * mDotUV;
+	mWeightDenominator = mDotUU * RenderMath::DotProduct(mVectorV, mVectorV) - mDotUV * mDotUV;
 }
 
-Vector3 Triangle::GetVertexWeight(Vector3& inPoint)
+Vector3 Triangle2D::GetVertexWeight(Vector2& inPoint)
 {
 	Vector3 Result;
 
 	mVectorW = inPoint - point1.position;
 
-	Result.Y = (RenderMath::HomoDotProduct(mVectorW, mVectorU) * mDotVV
-		- RenderMath::HomoDotProduct(mVectorW, mVectorV) * mDotUV) / mWeightDenominator;
-	Result.Z = (RenderMath::HomoDotProduct(mVectorW, mVectorV) * mDotUU
-		- RenderMath::HomoDotProduct(mVectorW, mVectorU) * mDotUV) / mWeightDenominator;
+	Result.Y = (RenderMath::DotProduct(mVectorW, mVectorU) * mDotVV
+		- RenderMath::DotProduct(mVectorW, mVectorV) * mDotUV) / mWeightDenominator;
+	Result.Z = (RenderMath::DotProduct(mVectorW, mVectorV) * mDotUU
+		- RenderMath::DotProduct(mVectorW, mVectorU) * mDotUV) / mWeightDenominator;
 	Result.X = 1.0f - Result.Y - Result.Z;
 
 	return Result;

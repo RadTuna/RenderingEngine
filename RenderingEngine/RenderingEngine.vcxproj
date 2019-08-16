@@ -23,7 +23,7 @@
     <ClInclude Include="Source\Engine\Math\RenderMath.h" />
     <ClInclude Include="Source\Engine\Resource\Resource.h" />
     <ClInclude Include="Source\Engine\Resource\targetver.h" />
-    <ClInclude Include="Source\Engine\SoftRenderer\Draw2DManager.h" />
+    <ClInclude Include="Source\Engine\SoftRenderer\Draw3DManager.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\GDIHelper.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\SoftRenderer.h" />
     <ClInclude Include="Source\Engine\SoftRenderer\TextureHelper.h" />
@@ -34,7 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Math\RenderMath.cpp" />
-    <ClCompile Include="Source\Engine\SoftRenderer\Draw2DManager.cpp" />
+    <ClCompile Include="Source\Engine\SoftRenderer\Draw3DManager.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\GDIHelper.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\SoftRenderer.cpp" />
     <ClCompile Include="Source\Engine\SoftRenderer\TextureHelper.cpp" />
