@@ -84,13 +84,13 @@ Matrix4x4 RenderMath::GetRotationMatrix4x4(const Vector4& rotation)
 		0.0f, std::sinf(rotation.X / GetConvertRadianValue()) * -1.0f, std::cosf(rotation.X / GetConvertRadianValue()), 0.0f, 
 		0.0f, 0.0f, 0.0f, 1.0f };
 	Matrix4x4 yRotMat = {
-		std::cosf(rotation.X / GetConvertRadianValue()), 0.0f, std::sinf(rotation.X / GetConvertRadianValue()) * -1.0f, 0.0f,
+		std::cosf(rotation.Y / GetConvertRadianValue()), 0.0f, std::sinf(rotation.Y / GetConvertRadianValue()) * -1.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
-		std::sinf(rotation.X / GetConvertRadianValue()), 0.0f, std::cosf(rotation.X / GetConvertRadianValue()), 0.0f,
+		std::sinf(rotation.Y / GetConvertRadianValue()), 0.0f, std::cosf(rotation.Y / GetConvertRadianValue()), 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f };
 	Matrix4x4 zRotMat = {
-		std::cosf(rotation.X / GetConvertRadianValue()), std::sinf(rotation.X / GetConvertRadianValue()), 0.0f, 0.0f,
-		std::sinf(rotation.X / GetConvertRadianValue()) * -1.0f, std::cosf(rotation.X / GetConvertRadianValue()), 0.0f, 0.0f,
+		std::cosf(rotation.Z / GetConvertRadianValue()), std::sinf(rotation.Z / GetConvertRadianValue()), 0.0f, 0.0f,
+		std::sinf(rotation.Z / GetConvertRadianValue()) * -1.0f, std::cosf(rotation.Z / GetConvertRadianValue()), 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f };
 

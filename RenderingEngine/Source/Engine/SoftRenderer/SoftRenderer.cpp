@@ -114,7 +114,7 @@ bool SoftRenderer::SetRenderParameter()
 	mViewCamera->SetLocation(cameraLocation);
 	mViewCamera->SetRotation(cameraRotation);
 	mViewCamera->CalculrateViewMatrix();
-	mViewCamera->CalcularateProjectionMatrix(90.0f, SomWidth, SomHeight, 1.0f, 1000.0f);
+	mViewCamera->CalcularateProjectionMatrix(50.0f, SomWidth, SomHeight, 1.0f, 1000.0f);
 
 
 	// 트라이앵글리스트를 DrawManager에 등록
@@ -138,7 +138,7 @@ bool SoftRenderer::SetRenderParameter()
 	vertices[0].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
 	vertices[0].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
 
-	vertices[1].point1.position = RenderMath::Vector4Set(50, 50, 50, 1);
+	vertices[1].point1.position = RenderMath::Vector4Set(0, 0, 50, 1);
 	vertices[1].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
 	vertices[1].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
 
@@ -150,7 +150,7 @@ bool SoftRenderer::SetRenderParameter()
 	vertices[1].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
 	vertices[1].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
 
-	vertices[2].point1.position = RenderMath::Vector4Set(50, 50, 50, 1);
+	vertices[2].point1.position = RenderMath::Vector4Set(0, 0, 50, 1);
 	vertices[2].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
 	vertices[2].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
 
@@ -162,7 +162,7 @@ bool SoftRenderer::SetRenderParameter()
 	vertices[2].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
 	vertices[2].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
 
-	vertices[3].point1.position = RenderMath::Vector4Set(50, 50, 50, 1);
+	vertices[3].point1.position = RenderMath::Vector4Set(0, 0, 50, 1);
 	vertices[3].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
 	vertices[3].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
 
@@ -234,7 +234,7 @@ void SoftRenderer::UpdateFrame(float deltaTime)
 
 	// DrawTriangle
 	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + (RenderMath::Vector4Set(0.0f, 0.0f, 0.0f, 0.0f) * deltaTime));
-	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + (RenderMath::Vector4Set(100.0f, 0.0f, 0.0f, 0.0f) *deltaTime));
+	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + (RenderMath::Vector4Set(0.0f, 100.0f, 0.0f, 0.0f) * deltaTime));
 	mDraw2DManager->DrawObject(mViewCamera->GetViewMatrix(), mViewCamera->GetProjectionMatrix());
 
 	// Buffer Swap 
