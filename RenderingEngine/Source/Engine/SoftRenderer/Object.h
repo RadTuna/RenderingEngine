@@ -23,6 +23,8 @@ struct Vertex2D
 	Vector2 position;
 	ColorRGBA Color;
 	Vector2 UV;
+
+	Vertex2D& operator=(const Vertex& Other);
 };
 
 struct Triangle2D
@@ -34,6 +36,8 @@ struct Triangle2D
 
 public:
 
+	Triangle2D(const Triangle& Other);
+	Triangle2D& operator=(const Triangle& Other);
 	void Initialize();
 	Vector3 GetVertexWeight(Vector2& inPoint);
 
@@ -59,9 +63,9 @@ public:
 	bool Initialize(Triangle* triangleList, int verticesCount);
 	void Release();
 	void SetLocation(const Vector4& location);
-	void SetRotation(const float rotation);
+	void SetRotation(const Vector4& rotation);
 	void SetScale(const Vector4& scale);
-	void SetTransform(const Vector4& location, const float rotation, const Vector4& scale);
+	void SetTransform(const Vector4& location, const Vector4& rotation, const Vector4& scale);
 	void DeepCopy(Object* target);
 
 private:
@@ -69,13 +73,13 @@ private:
 	Triangle* mMesh;
 	int mVerticesCount;
 	Vector4 mLocation;
-	float mRotation;
+	Vector4 mRotation;
 	Vector4 mScale;
 
 public:
 
 	inline Vector4 GetLocation() const { return mLocation; }
-	inline float GetRotation() const { return mRotation; }
+	inline Vector4 GetRotation() const { return mRotation; }
 	inline Vector4 GetScale() const { return mScale; }
 	inline Triangle* GetTriangleList() const { return mMesh; }
 	inline int GetVerticesCount() const { return mVerticesCount; }

@@ -15,10 +15,10 @@ public:
 	void DrawLine(struct Vector3& startLoc, struct Vector3& endLoc, struct ColorRGBA& rgb, bool useAntiAliase);
 	bool GenerateObject(struct Triangle* vertices, int vertexCount);
 	void ClearObject();
-	void DrawObject(const struct Matrix4x4& viewMatrix);
+	void DrawObject(const struct Matrix4x4& viewMatrix, const struct Matrix4x4& projectionMatrix);
 	void DrawMesh(struct Triangle* triangleList, int verticesCount);
-	void ProcessVertexShader(struct Triangle& vertices);
-	void TriangleRasterize(struct Triangle2D& vertices);
+	void ProcessVertexShader(struct Triangle vertices);
+	void TriangleRasterize(struct Triangle2D vertices);
 
 private:
 
@@ -27,7 +27,6 @@ private:
 	void RasterizeTopTriangle(struct Vertex2D& point1, struct Vertex2D& point2, struct Vertex2D& point3);
 	void RasterizeBottomTriangle(struct Vertex2D& point1, struct Vertex2D& point2, struct Vertex2D& point3);
 	void DrawFlatLine(struct Vertex2D& point1, struct Vertex2D& point2);
-	void TransformTriangle(struct Triangle& vertices);
 	void SortVecticesByY(struct Triangle2D* Vertices);
 
 private:

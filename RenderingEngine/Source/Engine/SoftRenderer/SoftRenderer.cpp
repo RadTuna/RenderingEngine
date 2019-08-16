@@ -56,7 +56,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 		return false;
 	}
 
-	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/tuna.tga");
+	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/stone.tga");
 	if (Result == false)
 	{
 		return false;
@@ -108,16 +108,17 @@ bool SoftRenderer::SetRenderParameter()
 	// 2D Render 관련 파라미터 설정.
 
 	// 카메라 위치, 회전을 설정.
-	Vector3 cameraLocation = RenderMath::Vector3Set(0.0f, 0.0f, 0.0f);
-	float cameraRotation = 0.0f;
+	Vector4 cameraLocation = RenderMath::Vector4Set(0.0f, 0.0f, 0.0f, 0.0f);
+	Vector4 cameraRotation = RenderMath::Vector4Set(0.0f, 0.0f, 0.0f, 0.0f);
 
 	mViewCamera->SetLocation(cameraLocation);
 	mViewCamera->SetRotation(cameraRotation);
 	mViewCamera->CalculrateViewMatrix();
+	mViewCamera->CalcularateProjectionMatrix(90.0f, SomWidth, SomHeight, 1.0f, 1000.0f);
 
 
 	// 트라이앵글리스트를 DrawManager에 등록
-	int vertexCount = 2;
+	int vertexCount = 4;
 
 	vertices = new Triangle[vertexCount];
 	if (vertices == nullptr)
@@ -125,29 +126,53 @@ bool SoftRenderer::SetRenderParameter()
 		return false;
 	}
 
-	vertices[0].point1.position = RenderMath::Vector3Set(-50, 50, 1);
+	vertices[0].point1.position = RenderMath::Vector4Set(0, 50, -50, 1);
 	vertices[0].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
-	vertices[0].point1.UV = RenderMath::Vector2Set(0.0f, 0.0f);
+	vertices[0].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
 
-	vertices[0].point2.position = RenderMath::Vector3Set(50, 50, 1);
+	vertices[0].point2.position = RenderMath::Vector4Set(50, -50, -50, 1);
 	vertices[0].point2.Color = RenderMath::ColorRGBASet(0, 255, 0, 255);
-	vertices[0].point2.UV = RenderMath::Vector2Set(1.0f, 0.0f);
+	vertices[0].point2.UV = RenderMath::Vector2Set(0.0f, 0.0f);
 
-	vertices[0].point3.position = RenderMath::Vector3Set(-50, -50, 1);
+	vertices[0].point3.position = RenderMath::Vector4Set(-50, -50, -50, 1);
 	vertices[0].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
 	vertices[0].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
 
-	vertices[1].point1.position = RenderMath::Vector3Set(50, 50, 1);
+	vertices[1].point1.position = RenderMath::Vector4Set(50, 50, 50, 1);
 	vertices[1].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
-	vertices[1].point1.UV = RenderMath::Vector2Set(1.0f, 0.0f);
+	vertices[1].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
 
-	vertices[1].point2.position = RenderMath::Vector3Set(50, -50, 1);
+	vertices[1].point2.position = RenderMath::Vector4Set(0, 50, -50, 1);
 	vertices[1].point2.Color = RenderMath::ColorRGBASet(0, 255, 0, 255);
-	vertices[1].point2.UV = RenderMath::Vector2Set(1.0f, 1.0f);
+	vertices[1].point2.UV = RenderMath::Vector2Set(0.0f, 0.0f);
 
-	vertices[1].point3.position = RenderMath::Vector3Set(-50, -50, 1);
+	vertices[1].point3.position = RenderMath::Vector4Set(50, -50, -50, 1);
 	vertices[1].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
 	vertices[1].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
+
+	vertices[2].point1.position = RenderMath::Vector4Set(50, 50, 50, 1);
+	vertices[2].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
+	vertices[2].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
+
+	vertices[2].point2.position = RenderMath::Vector4Set(-50, -50, -50, 1);
+	vertices[2].point2.Color = RenderMath::ColorRGBASet(0, 255, 0, 255);
+	vertices[2].point2.UV = RenderMath::Vector2Set(0.0f, 0.0f);
+
+	vertices[2].point3.position = RenderMath::Vector4Set(0, 50, -50, 1);
+	vertices[2].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
+	vertices[2].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
+
+	vertices[3].point1.position = RenderMath::Vector4Set(50, 50, 50, 1);
+	vertices[3].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
+	vertices[3].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
+
+	vertices[3].point2.position = RenderMath::Vector4Set(50, -50, -50, 1);
+	vertices[3].point2.Color = RenderMath::ColorRGBASet(0, 255, 0, 255);
+	vertices[3].point2.UV = RenderMath::Vector2Set(0.0f, 0.0f);
+
+	vertices[3].point3.position = RenderMath::Vector4Set(-50, -50, -50, 1);
+	vertices[3].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
+	vertices[3].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
 
 	Result = mDraw2DManager->GenerateObject(vertices, vertexCount);
 	if (Result == false)
@@ -155,7 +180,7 @@ bool SoftRenderer::SetRenderParameter()
 		return false;
 	}
 
-	mDraw2DManager->GetMeshList()[0].SetTransform(RenderMath::Vector3Set(0.0f, 0.0f, 0.0f), 0.0f, RenderMath::Vector3Set(1.0f, 1.0f, 0.0f));
+	mDraw2DManager->GetMeshList()[0].SetTransform(RenderMath::Vector4Set(0.0f, 0.0f, 0.0f, 0.0f), RenderMath::Vector4Set(0.0f, 0.0f, 0.0f, 0.0f), RenderMath::Vector4Set(1.0f, 1.0f, 1.0f, 0.0f));
 
 	delete[] vertices;
 	vertices = nullptr;
@@ -208,9 +233,9 @@ void SoftRenderer::UpdateFrame(float deltaTime)
 	mDraw2DManager->DrawLine(points[2], points[0], Color, false);
 
 	// DrawTriangle
-	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + (RenderMath::Vector3Set(-30.0f, 0.0f, 0.0f) * deltaTime));
-	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + (100.0f * deltaTime));
-	mDraw2DManager->DrawObject(mViewCamera->GetViewMatrix());
+	mDraw2DManager->GetMeshList()[0].SetLocation(mDraw2DManager->GetMeshList()[0].GetLocation() + (RenderMath::Vector4Set(0.0f, 0.0f, 0.0f, 0.0f) * deltaTime));
+	mDraw2DManager->GetMeshList()[0].SetRotation(mDraw2DManager->GetMeshList()[0].GetRotation() + (RenderMath::Vector4Set(100.0f, 0.0f, 0.0f, 0.0f) *deltaTime));
+	mDraw2DManager->DrawObject(mViewCamera->GetViewMatrix(), mViewCamera->GetProjectionMatrix());
 
 	// Buffer Swap 
 	mGDIHelper->BufferSwap();

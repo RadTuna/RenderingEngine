@@ -61,7 +61,7 @@ bool Draw3DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGD
 		return false;
 	}
 
-	mTransformMatrix = new struct Matrix3x3;
+	mTransformMatrix = new struct Matrix4x4;
 	if (mTransformMatrix == nullptr)
 	{
 		return false;
@@ -234,13 +234,6 @@ void Draw3DManager::GetYLocationf(float width, float height, float inX, float* o
 	return;
 }
 
-void Draw3DManager::TransformTriangle(Triangle& vertices)
-{
-	RenderMath::MatrixMul(&vertices.point1.position, *mTransformMatrix);
-	RenderMath::MatrixMul(&vertices.point2.position, *mTransformMatrix);
-	RenderMath::MatrixMul(&vertices.point3.position, *mTransformMatrix);
-}
-
 bool Draw3DManager::GenerateObject(struct Triangle* vertices, int vertexCount)
 {
 	bool Result;
@@ -285,12 +278,13 @@ void Draw3DManager::ClearObject()
 	mCurrentObjectIndex--;
 }
 
-void Draw3DManager::DrawObject(const Matrix4x4& viewMatrix)
+void Draw3DManager::DrawObject(const Matrix4x4& viewMatrix, const Matrix4x4& projectionMatrix)
 {
 	for (int i = 0; i < mCurrentObjectIndex; ++i)
 	{
-		*mTransformMatrix = RenderMath::GetTransformMatrix3x3(mObjectList[i].GetLocation(), mObjectList[i].GetRotation(), mObjectList[i].GetScale());
+		*mTransformMatrix = RenderMath::GetTransformMatrix4x4(mObjectList[i].GetLocation(), mObjectList[i].GetRotation(), mObjectList[i].GetScale());
 		RenderMath::MatrixMul(mTransformMatrix, viewMatrix);
+		RenderMath::MatrixMul(mTransformMatrix, projectionMatrix);
 		DrawMesh(mObjectList[i].GetTriangleList(), mObjectList[i].GetVerticesCount());
 	}
 }
@@ -303,13 +297,17 @@ void Draw3DManager::DrawMesh(Triangle* triangleList, int verticesCount)
 	}
 }
 
-void Draw3DManager::ProcessVertexShader(Triangle& vertices)
+void Draw3DManager::ProcessVertexShader(Triangle vertices)
 {
-	// 임시로 Flow만 맞춰둠.
-	TriangleRasterize(/*Triangle2D Argument*/);
+	// TransformMatrix로 버텍스 위치 변경.
+	RenderMath::MatrixMul(&vertices.point1.position, *mTransformMatrix);
+	RenderMath::MatrixMul(&vertices.point2.position, *mTransformMatrix);
+	RenderMath::MatrixMul(&vertices.point3.position, *mTransformMatrix);
+
+	TriangleRasterize(vertices);
 }
 
-void Draw3DManager::TriangleRasterize(Triangle2D& vertices)
+void Draw3DManager::TriangleRasterize(Triangle2D vertices)
 {
 	mCurrentTriangle2D = &vertices;
 

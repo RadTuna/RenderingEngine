@@ -48,7 +48,7 @@ void Object::SetLocation(const Vector4& location)
 	mLocation = location;
 }
 
-void Object::SetRotation(const float rotation)
+void Object::SetRotation(const Vector4& rotation)
 {
 	mRotation = rotation;
 }
@@ -58,7 +58,7 @@ void Object::SetScale(const Vector4& scale)
 	mScale = scale;
 }
 
-void Object::SetTransform(const Vector4& location, const float rotation, const Vector4& scale)
+void Object::SetTransform(const Vector4& location, const Vector4& rotation, const Vector4& scale)
 {
 	SetLocation(location);
 	SetRotation(rotation);
@@ -77,6 +77,22 @@ void Object::DeepCopy(Object* target)
 	target->SetLocation(mLocation);
 	target->SetRotation(mRotation);
 	target->SetScale(mScale);
+}
+
+Triangle2D::Triangle2D(const Triangle& Other)
+{
+	point1 = Other.point1;
+	point2 = Other.point2;
+	point3 = Other.point3;
+}
+
+Triangle2D& Triangle2D::operator=(const Triangle& Other)
+{
+	point1 = Other.point1;
+	point2 = Other.point2;
+	point3 = Other.point3;
+
+	return *this;
 }
 
 void Triangle2D::Initialize()
@@ -105,3 +121,14 @@ Vector3 Triangle2D::GetVertexWeight(Vector2& inPoint)
 
 	return Result;
 }
+
+Vertex2D& Vertex2D::operator=(const Vertex& Other)
+{
+	position.X = Other.position.X;
+	position.Y = Other.position.Y;
+	Color = Other.Color;
+	UV = Other.UV;
+
+	return *this;
+}
+

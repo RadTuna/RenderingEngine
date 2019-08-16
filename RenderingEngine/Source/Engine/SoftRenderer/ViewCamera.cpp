@@ -9,11 +9,20 @@ ViewCamera::ViewCamera()
 	mViewMatrix = nullptr;
 	mLocationX = 0.0f;
 	mLocationY = 0.0f;
-	mRotation = 0.0f;
+	mLocationZ = 0.0f;
+	mRotationX = 0.0f;
+	mRotationY = 0.0f;
+	mRotationZ = 0.0f;
 }
 
 ViewCamera::~ViewCamera()
 {
+	if (mProjectionMatrix != nullptr)
+	{
+		delete mProjectionMatrix;
+		mProjectionMatrix = nullptr;
+	}
+
 	if (mViewMatrix != nullptr)
 	{
 		delete mViewMatrix;
@@ -23,9 +32,17 @@ ViewCamera::~ViewCamera()
 
 bool ViewCamera::Initialize()
 {
-	mViewMatrix = new struct Matrix3x3;
+	mViewMatrix = new struct Matrix4x4;
 	if (mViewMatrix == nullptr)
 	{
+		return false;
+	}
+
+	mProjectionMatrix = new struct Matrix4x4;
+	if (mProjectionMatrix == nullptr)
+	{
+		delete mViewMatrix;
+		mViewMatrix = nullptr;
 		return false;
 	}
 
@@ -34,6 +51,12 @@ bool ViewCamera::Initialize()
 
 void ViewCamera::Release()
 {
+	if (mProjectionMatrix != nullptr)
+	{
+		delete mProjectionMatrix;
+		mProjectionMatrix = nullptr;
+	}
+
 	if (mViewMatrix != nullptr)
 	{
 		delete mViewMatrix;
@@ -80,10 +103,28 @@ void ViewCamera::CalculrateViewMatrix()
 		xVector.Y, yVector.Y, zVector.Y, 0.0f,
 		xVector.Z, yVector.Z, zVector.Z, 0.0f,
 		RenderMath::DotProduct(position, xVector), RenderMath::DotProduct(position, yVector), RenderMath::DotProduct(position, zVector), 1.0f };
+
+	return;
 }
 
-void ViewCamera::CalcularateProjectionMatrix(float screenWidth, float screenHeight, float nearDistance, float farDistance)
+void ViewCamera::CalcularateProjectionMatrix(float fov, float screenWidth, float screenHeight, float nearDistance, float farDistance)
 {
+	fov = fov / RenderMath::GetConvertRadianValue();
+
 	float screenAspect = screenWidth / screenHeight;
+
+	float height = 1.0f / std::tanf(fov / 2.0f);
+	float width = height / screenAspect;
+
+	float zScale = farDistance / (farDistance - nearDistance);
+	float zMove = -nearDistance * zScale;
+
+	*mProjectionMatrix = {
+		width, 0.0f, 0.0f, 0.0f,
+		0.0f, height, 0.0f, 0.0f,
+		0.0f, 0.0f, zScale, 1.0f,
+		0.0f, 0.0f, zMove, 0.0f };
+
+	return;
 }
 

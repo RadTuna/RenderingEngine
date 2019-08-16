@@ -333,7 +333,6 @@ Vector3 Vector3::operator*(const float& Other) const
 	Vector3 temp;
 	temp.X = X * Other;
 	temp.Y = Y * Other;
-	temp.Z = Z * Other;
 	return temp;
 }
 
@@ -371,7 +370,6 @@ Vector4 Vector4::operator*(const float& Other) const
 	temp.X = X * Other;
 	temp.Y = Y * Other;
 	temp.Z = Z * Other;
-	temp.W = W * Other;
 	return temp;
 }
 

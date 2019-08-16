@@ -16,7 +16,7 @@ public:
 	void SetLocation(struct Vector4& location);
 	void SetRotation(struct Vector4& rotation);
 	void CalculrateViewMatrix();
-	void CalcularateProjectionMatrix(float screenWidth, float screenHeight, float nearDistance, float farDistance);
+	void CalcularateProjectionMatrix(float fov, float screenWidth, float screenHeight, float nearDistance, float farDistance);
 
 private:
 
