@@ -129,6 +129,7 @@ public:
 	static constexpr float GetConvertRadianValue();
 	static bool IsNearlyFloat(float valueA, float valueB, float tolerance = KINDA_SMALL_NUMBER);
 	static float NormalizeFloat(float target, float min, float max);
+	static Vector2 Vector3toVector2(const Vector3& inVector);
 
 	static ColorRGBA ColorRGBASet(BYTE inRed, BYTE inGreen, BYTE inBlue, BYTE inAlpha);
 

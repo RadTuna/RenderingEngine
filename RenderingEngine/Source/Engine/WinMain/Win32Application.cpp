@@ -64,7 +64,7 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 	windowClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	windowClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	windowClass.lpszMenuName = MAKEINTRESOURCEW(IDC_SOMENGINE);
-	windowClass.lpszClassName = SomTitle;
+	windowClass.lpszClassName = ProgramTitle;
 	windowClass.hIconSm = LoadIcon(windowClass.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
 	if (RegisterClassEx(&windowClass) == 0) // 0이면 Register에 실패하여 Return
@@ -76,13 +76,13 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 	// SomWorks :D // Instance Init // 인스턴스 핸들을 저장하고 주 창을 만듭니다.
 	m_hInstance = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-	RECT windowRect = { 0, 0, static_cast<LONG>(SomWidth), static_cast<LONG>(SomHeight) };
+	RECT windowRect = { 0, 0, static_cast<LONG>(ScreenWidth), static_cast<LONG>(ScreenHeight) };
 	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
 	// Create the window and store a handle to it.
 	m_hwnd = CreateWindow(
-		SomTitle,
-		SomTitle,
+		ProgramTitle,
+		ProgramTitle,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -146,7 +146,7 @@ int Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 
 			mSoftRenderer->UpdateFrame(mTimeCounter->GetDeltaTime() / 1000.0f);
 
-			swprintf_s(titleString, 100, L"%s  / FPS: %.2f / Time: %.2fms", SomTitle, mTimeCounter->GetFPS(), mTimeCounter->GetDeltaTime());
+			swprintf_s(titleString, 100, L"%s  / FPS: %.2f / Time: %.2fms", ProgramTitle, mTimeCounter->GetFPS(), mTimeCounter->GetDeltaTime());
 
 			SetWindowTextW(m_hwnd, titleString);
 		}

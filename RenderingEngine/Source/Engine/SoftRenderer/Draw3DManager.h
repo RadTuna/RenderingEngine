@@ -28,6 +28,7 @@ private:
 	void RasterizeBottomTriangle(struct Vertex2D& point1, struct Vertex2D& point2, struct Vertex2D& point3);
 	void DrawFlatLine(struct Vertex2D& point1, struct Vertex2D& point2);
 	void SortVecticesByY(struct Triangle2D* Vertices);
+	void InitializeZBuffer();
 
 private:
 
@@ -37,6 +38,7 @@ private:
 	class TextureHelper* mTextureHelper;
 	struct Matrix4x4* mTransformMatrix;
 	struct Triangle2D* mCurrentTriangle2D;
+	float* mZDepthBuffer;
 	int mObjectCapacity;
 	int mCurrentObjectIndex;
 	bool useTexture;

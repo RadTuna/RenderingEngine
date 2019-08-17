@@ -22,6 +22,12 @@ Draw3DManager::Draw3DManager()
 
 Draw3DManager::~Draw3DManager()
 {
+	if (mZDepthBuffer != nullptr)
+	{
+		delete[] mZDepthBuffer;
+		mZDepthBuffer = nullptr;
+	}
+
 	if (mObjectList != nullptr)
 	{
 		delete[] mObjectList;
@@ -75,11 +81,25 @@ bool Draw3DManager::Initialize(SoftRenderer* initSoftRenderer, GDIHelper* initGD
 
 	useTexture = mTextureHelper->Initialize(filename);
 
+	mZDepthBuffer = new float[ScreenWidth * ScreenHeight];
+	if (mZDepthBuffer == nullptr)
+	{
+		return false;
+	}
+
+	InitializeZBuffer();
+
 	return true;
 }
 
 void Draw3DManager::Release()
 {
+	if (mZDepthBuffer != nullptr)
+	{
+		delete[] mZDepthBuffer;
+		mZDepthBuffer = nullptr;
+	}
+
 	if (mObjectList != nullptr)
 	{
 		delete[] mObjectList;
@@ -280,6 +300,8 @@ void Draw3DManager::ClearObject()
 
 void Draw3DManager::DrawObject(const Matrix4x4& viewMatrix, const Matrix4x4& projectionMatrix)
 {
+	InitializeZBuffer();
+
 	for (int i = 0; i < mCurrentObjectIndex; ++i)
 	{
 		*mTransformMatrix = RenderMath::GetTransformMatrix4x4(mObjectList[i].GetLocation(), mObjectList[i].GetRotation(), mObjectList[i].GetScale());
@@ -333,8 +355,6 @@ void Draw3DManager::TriangleRasterize(Triangle2D vertices)
 		RasterizeBottomTriangle(vertices.point1, vertices.point2, NewVertex);
 		RasterizeTopTriangle(vertices.point2, NewVertex, vertices.point3);
 	}
-
-
 }
 
 void Draw3DManager::RasterizeBottomTriangle(Vertex2D& point1, Vertex2D& point2, Vertex2D& point3)
@@ -355,8 +375,8 @@ void Draw3DManager::RasterizeBottomTriangle(Vertex2D& point1, Vertex2D& point2, 
 		Vertex2D TempVertex1;
 		Vertex2D TempVertex2;
 
-		TempVertex1.position = RenderMath::Vector2Set(StartPosX, ScanLineY);
-		TempVertex2.position = RenderMath::Vector2Set(EndPosX, ScanLineY);
+		TempVertex1.position = RenderMath::Vector3Set(StartPosX, ScanLineY, 1.0f);
+		TempVertex2.position = RenderMath::Vector3Set(EndPosX, ScanLineY, 1.0f);
 
 		DrawFlatLine(TempVertex1, TempVertex2);
 
@@ -385,8 +405,8 @@ void Draw3DManager::RasterizeTopTriangle(Vertex2D& point1, Vertex2D& point2, Ver
 		Vertex2D TempVertex1;
 		Vertex2D TempVertex2;
 
-		TempVertex1.position = RenderMath::Vector2Set(StartPosX, ScanLineY);
-		TempVertex2.position = RenderMath::Vector2Set(EndPosX, ScanLineY);
+		TempVertex1.position = RenderMath::Vector3Set(StartPosX, ScanLineY, 1.0f);
+		TempVertex2.position = RenderMath::Vector3Set(EndPosX, ScanLineY, 1.0f);
 
 		DrawFlatLine(TempVertex1, TempVertex2);
 
@@ -407,7 +427,7 @@ void Draw3DManager::DrawFlatLine(Vertex2D& point1, Vertex2D& point2)
 	for (int i = (int)RenderMath::GetMin(point1.position.X, point2.position.X); i <= RenderMath::GetMax(point1.position.X, point2.position.X); ++i)
 	{
 		// 포인트가 화면을 벗어나면 그리지 않음.
-		if (abs(i) >= SomWidth / 2 || abs(point1.position.Y) >= SomHeight / 2)
+		if (abs(i) >= ScreenWidth / 2 || abs(point1.position.Y) >= ScreenHeight / 2)
 		{
 			continue;
 		}
@@ -417,6 +437,22 @@ void Draw3DManager::DrawFlatLine(Vertex2D& point1, Vertex2D& point2)
 			Vector2 currentPoint = RenderMath::Vector2Set(i, point1.position.Y);
 
 			Vector3 vertexWeight = mCurrentTriangle2D->GetVertexWeight(currentPoint);
+
+			float currentDepth = 
+				mCurrentTriangle2D->point1.position.Z * vertexWeight.X +
+				mCurrentTriangle2D->point2.position.Z * vertexWeight.Y +
+				mCurrentTriangle2D->point3.position.Z * vertexWeight.Z;
+
+			currentDepth = RenderMath::NormalizeFloat(currentDepth, CameraNear, CameraFar);
+
+			if (mZDepthBuffer[ScreenWidth * ((int)currentPoint.Y + ScreenHeight / 2) + ((int)currentPoint.X + ScreenWidth / 2)] > currentDepth)
+			{
+				mZDepthBuffer[ScreenWidth * ((int)currentPoint.Y + ScreenHeight / 2) + ((int)currentPoint.X + ScreenWidth / 2)] = currentDepth;
+			}
+			else
+			{
+				continue;
+			}
 
 			Vector2 currentUV = 
 				mCurrentTriangle2D->point1.UV * vertexWeight.X +
@@ -486,3 +522,11 @@ void Draw3DManager::SortVecticesByY(Triangle2D* vertices)
 	return;
 }
 
+void Draw3DManager::InitializeZBuffer()
+{
+	// ZBuffer의 초기화 실시.
+	for (int i = 0; i < ScreenWidth * ScreenHeight; ++i)
+	{
+		mZDepthBuffer[i] = 1.0f;
+	}
+}

@@ -56,7 +56,7 @@ bool SoftRenderer::Initialize(GDIHelper* initGDIHelper, HWND* hWnd)
 		return false;
 	}
 
-	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/stone.tga");
+	Result = mDraw2DManager->Initialize(this, mGDIHelper, "../RenderingEngine/Source/Engine/Resource/stone.bmp");
 	if (Result == false)
 	{
 		return false;
@@ -114,7 +114,7 @@ bool SoftRenderer::SetRenderParameter()
 	mViewCamera->SetLocation(cameraLocation);
 	mViewCamera->SetRotation(cameraRotation);
 	mViewCamera->CalculrateViewMatrix();
-	mViewCamera->CalcularateProjectionMatrix(50.0f, SomWidth, SomHeight, 1.0f, 1000.0f);
+	mViewCamera->CalcularateProjectionMatrix(50.0f, ScreenWidth, ScreenHeight, CameraNear, CameraFar);
 
 
 	// 트라이앵글리스트를 DrawManager에 등록
@@ -190,7 +190,7 @@ bool SoftRenderer::SetRenderParameter()
 
 bool SoftRenderer::IsInRange(int x, int y)
 {
-	return (abs(x) < (SomWidth / 2)) && (abs(y) < (SomHeight / 2));
+	return (abs(x) < (ScreenWidth / 2)) && (abs(y) < (ScreenHeight / 2));
 }
 
 void SoftRenderer::PutPixel(int x, int y)
@@ -198,7 +198,7 @@ void SoftRenderer::PutPixel(int x, int y)
 	if (!IsInRange(x, y)) return;
 
 	ULONG* dest = (ULONG*)mGDIHelper->GetpBits();
-	DWORD offset = SomWidth * SomHeight / 2 + SomWidth / 2 + x + SomWidth * -y;
+	DWORD offset = ScreenWidth * ScreenHeight / 2 + ScreenWidth / 2 + x + ScreenWidth * -y;
 	*(dest + offset) = mGDIHelper->GetCurrentColor();
 
 	return;

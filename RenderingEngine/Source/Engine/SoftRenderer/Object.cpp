@@ -97,8 +97,8 @@ Triangle2D& Triangle2D::operator=(const Triangle& Other)
 
 void Triangle2D::Initialize()
 {
-	mVectorU = point2.position - point1.position;
-	mVectorV = point3.position - point1.position;
+	mVectorU = RenderMath::Vector3toVector2(point2.position - point1.position);
+	mVectorV = RenderMath::Vector3toVector2(point3.position - point1.position);
 
 	mDotUU = RenderMath::DotProduct(mVectorU, mVectorU);
 	mDotUV = RenderMath::DotProduct(mVectorU, mVectorV);
@@ -111,7 +111,7 @@ Vector3 Triangle2D::GetVertexWeight(Vector2& inPoint)
 {
 	Vector3 Result;
 
-	mVectorW = inPoint - point1.position;
+	mVectorW = inPoint - RenderMath::Vector3toVector2(point1.position);
 
 	Result.Y = (RenderMath::DotProduct(mVectorW, mVectorU) * mDotVV
 		- RenderMath::DotProduct(mVectorW, mVectorV) * mDotUV) / mWeightDenominator;
@@ -126,6 +126,7 @@ Vertex2D& Vertex2D::operator=(const Vertex& Other)
 {
 	position.X = Other.position.X;
 	position.Y = Other.position.Y;
+	position.Z = Other.position.Z;
 	Color = Other.Color;
 	UV = Other.UV;
 

@@ -20,7 +20,7 @@ struct Triangle
 
 struct Vertex2D
 {
-	Vector2 position;
+	Vector3 position; // Z에는 Depth정보가 들어감.
 	ColorRGBA Color;
 	Vector2 UV;
 

@@ -5,7 +5,7 @@
 
 void GDIHelper::BufferSwap()
 {
-	BitBlt(hScreenDC, 0, 0, SomWidth, SomHeight, hMemoryDC, 0, 0, SRCCOPY);
+	BitBlt(hScreenDC, 0, 0, ScreenWidth, ScreenHeight, hMemoryDC, 0, 0, SRCCOPY);
 }
 
 void GDIHelper::SetColor(BYTE r, BYTE g, BYTE b)
@@ -27,10 +27,10 @@ ColorRGBA GDIHelper::GetPixelColor(int x, int y)
 {
 	ColorRGBA temp;
 
-	x += SomWidth / 2;
-	y += SomHeight / 2;
+	x += ScreenWidth / 2;
+	y += ScreenHeight / 2;
 
-	int destCoord = (SomWidth * SomHeight) - (SomWidth * y - x);
+	int destCoord = (ScreenWidth * ScreenHeight) - (ScreenWidth * y - x);
 
 	ULONG* colorField = reinterpret_cast<ULONG*>(pBits);
 
@@ -45,7 +45,7 @@ ColorRGBA GDIHelper::GetPixelColor(int x, int y)
 void GDIHelper::Clear()
 {
 	ULONG* dest = (ULONG*)pBits;
-	DWORD bytecount = SomWidth * SomHeight * sizeof(ULONG);
+	DWORD bytecount = ScreenWidth * ScreenHeight * sizeof(ULONG);
 	ULONG value = currentColor;
 	bytecount /= 4;
 	while (bytecount--)
@@ -63,8 +63,8 @@ void GDIHelper::InitGDI(HWND hWnd)
 	BITMAPINFO bmi;
 	memset(&bmi, 0, sizeof(BITMAPINFO));
 	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bmi.bmiHeader.biWidth = SomWidth;
-	bmi.bmiHeader.biHeight = -SomHeight;
+	bmi.bmiHeader.biWidth = ScreenWidth;
+	bmi.bmiHeader.biHeight = -ScreenHeight;
 	bmi.bmiHeader.biPlanes = 1;
 	bmi.bmiHeader.biBitCount = 32;
 	bmi.bmiHeader.biCompression = BI_RGB;

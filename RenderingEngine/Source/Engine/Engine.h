@@ -3,9 +3,11 @@
 #pragma once
 
 // SomWorks :D // WinAPI Windows Setup
-#define SomWidth 1024
-#define SomHeight 768
-#define SomTitle L"RenderingEngine_Win32"
+#define ScreenWidth 1024
+#define ScreenHeight 768
+#define ProgramTitle L"RenderingEngine_Win32"
+#define CameraNear 1.0f
+#define CameraFar 1000.0f
 
 // SomWorks :D // Renderer Setup
 #define bUseSoftRenderer true

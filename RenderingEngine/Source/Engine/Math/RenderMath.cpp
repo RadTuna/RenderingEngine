@@ -271,6 +271,14 @@ ColorRGBA RenderMath::ColorRGBASet(BYTE inRed, BYTE inGreen, BYTE inBlue, BYTE i
 	return temp;
 }
 
+Vector2 RenderMath::Vector3toVector2(const Vector3& inVector)
+{
+	Vector2 temp;
+	temp.X = inVector.X;
+	temp.Y = inVector.Y;
+	return temp;
+}
+
 Vector2 Vector2::operator+(const Vector2& Other) const
 {
 	Vector2 temp;

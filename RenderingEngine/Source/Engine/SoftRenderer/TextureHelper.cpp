@@ -147,6 +147,7 @@ bool TextureHelper::LoadBmp(const char* filename)
 			mTextureData->colorData[Index].red = imageData[k + 2]; // Red
 			mTextureData->colorData[Index].green = imageData[k + 1]; // Green
 			mTextureData->colorData[Index].blue = imageData[k + 0]; // Blue
+			mTextureData->colorData[Index].alpha = 255;
 
 			k += 3;
 			Index++;
