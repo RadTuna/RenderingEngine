@@ -125,7 +125,7 @@ bool SoftRenderer::SetRenderParameter()
 	{
 		return false;
 	}
-
+	
 	vertices[0].point1.position = RenderMath::Vector4Set(0, 50, -50, 1);
 	vertices[0].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
 	vertices[0].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
@@ -137,7 +137,7 @@ bool SoftRenderer::SetRenderParameter()
 	vertices[0].point3.position = RenderMath::Vector4Set(-50, -50, -50, 1);
 	vertices[0].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
 	vertices[0].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
-
+	
 	vertices[1].point1.position = RenderMath::Vector4Set(0, 0, 50, 1);
 	vertices[1].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
 	vertices[1].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
@@ -149,7 +149,7 @@ bool SoftRenderer::SetRenderParameter()
 	vertices[1].point3.position = RenderMath::Vector4Set(50, -50, -50, 1);
 	vertices[1].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
 	vertices[1].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
-
+	
 	vertices[2].point1.position = RenderMath::Vector4Set(0, 0, 50, 1);
 	vertices[2].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
 	vertices[2].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);
@@ -161,7 +161,7 @@ bool SoftRenderer::SetRenderParameter()
 	vertices[2].point3.position = RenderMath::Vector4Set(0, 50, -50, 1);
 	vertices[2].point3.Color = RenderMath::ColorRGBASet(0, 0, 255, 255);
 	vertices[2].point3.UV = RenderMath::Vector2Set(0.0f, 1.0f);
-
+	
 	vertices[3].point1.position = RenderMath::Vector4Set(0, 0, 50, 1);
 	vertices[3].point1.Color = RenderMath::ColorRGBASet(255, 0, 0, 255);
 	vertices[3].point1.UV = RenderMath::Vector2Set(0.5f, 0.0f);

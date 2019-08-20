@@ -438,13 +438,14 @@ void Draw3DManager::DrawFlatLine(Vertex2D& point1, Vertex2D& point2)
 
 			Vector3 vertexWeight = mCurrentTriangle2D->GetVertexWeight(currentPoint);
 
+			
 			float currentDepth = 
 				mCurrentTriangle2D->point1.position.Z * vertexWeight.X +
 				mCurrentTriangle2D->point2.position.Z * vertexWeight.Y +
 				mCurrentTriangle2D->point3.position.Z * vertexWeight.Z;
 
 			currentDepth = RenderMath::NormalizeFloat(currentDepth, CameraNear, CameraFar);
-
+			
 			if (mZDepthBuffer[ScreenWidth * ((int)currentPoint.Y + ScreenHeight / 2) + ((int)currentPoint.X + ScreenWidth / 2)] > currentDepth)
 			{
 				mZDepthBuffer[ScreenWidth * ((int)currentPoint.Y + ScreenHeight / 2) + ((int)currentPoint.X + ScreenWidth / 2)] = currentDepth;
