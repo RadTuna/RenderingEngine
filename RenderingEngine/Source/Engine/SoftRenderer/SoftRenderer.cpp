@@ -108,7 +108,7 @@ bool SoftRenderer::SetRenderParameter()
 	// 2D Render 관련 파라미터 설정.
 
 	// 카메라 위치, 회전을 설정.
-	Vector4 cameraLocation = RenderMath::Vector4Set(0.0f, 0.0f, 0.0f, 0.0f);
+	Vector4 cameraLocation = RenderMath::Vector4Set(0.0f, 0.0f, -800.0f, 0.0f);
 	Vector4 cameraRotation = RenderMath::Vector4Set(0.0f, 0.0f, 0.0f, 0.0f);
 
 	mViewCamera->SetLocation(cameraLocation);

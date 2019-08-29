@@ -326,6 +326,24 @@ void Draw3DManager::ProcessVertexShader(Triangle vertices)
 	RenderMath::MatrixMul(&vertices.point2.position, *mTransformMatrix);
 	RenderMath::MatrixMul(&vertices.point3.position, *mTransformMatrix);
 
+	vertices.point1.position.X /= vertices.point1.position.W;
+	vertices.point2.position.X /= vertices.point2.position.W;
+	vertices.point3.position.X /= vertices.point3.position.W;
+
+	vertices.point1.position.Y /= vertices.point1.position.W;
+	vertices.point2.position.Y /= vertices.point2.position.W;
+	vertices.point3.position.Y /= vertices.point3.position.W;
+
+	
+	vertices.point1.position.X *= ScreenWidth;
+	vertices.point2.position.X *= ScreenWidth;
+	vertices.point3.position.X *= ScreenWidth;
+
+	vertices.point1.position.Y *= ScreenHeight;
+	vertices.point2.position.Y *= ScreenHeight;
+	vertices.point3.position.Y *= ScreenHeight;
+	
+
 	TriangleRasterize(vertices);
 }
 
@@ -444,7 +462,7 @@ void Draw3DManager::DrawFlatLine(Vertex2D& point1, Vertex2D& point2)
 				mCurrentTriangle2D->point2.position.Z * vertexWeight.Y +
 				mCurrentTriangle2D->point3.position.Z * vertexWeight.Z;
 
-			currentDepth = RenderMath::NormalizeFloat(currentDepth, CameraNear, CameraFar);
+			 //currentDepth = RenderMath::NormalizeFloat(currentDepth, CameraNear, CameraFar);
 			
 			if (mZDepthBuffer[ScreenWidth * ((int)currentPoint.Y + ScreenHeight / 2) + ((int)currentPoint.X + ScreenWidth / 2)] > currentDepth)
 			{

@@ -81,15 +81,14 @@ void ViewCamera::SetRotation(Vector4& rotation)
 void ViewCamera::CalculrateViewMatrix()
 {
 	Vector4 position = RenderMath::Vector4Set(-mLocationX, -mLocationY, -mLocationZ, 1.0f);
-	Vector4 lookVector = RenderMath::Vector4Set(0.0f, 0.0f, 1.0f, 0.0f);
+	Vector4 lookVector = RenderMath::Vector4Set(0.0f, 0.0f, 0.0f, 0.0f);
 	Vector4 upVector = RenderMath::Vector4Set(0.0f, 1.0f, 0.0f, 0.0f);
 
 	Matrix4x4 rotationMatrix = RenderMath::GetRotationMatrix4x4(RenderMath::Vector4Set(-mRotationX, -mRotationY, -mRotationZ, 0.0f));
 
-	RenderMath::MatrixMul(&lookVector, rotationMatrix);
-	RenderMath::MatrixMul(&upVector, rotationMatrix);
-
 	Vector4 xVector = lookVector - position;
+	RenderMath::MatrixMul(&xVector, rotationMatrix);
+	RenderMath::MatrixMul(&upVector, rotationMatrix);
 	RenderMath::Normalize(&xVector);
 
 	Vector4 zVector = RenderMath::CrossProduct(xVector, upVector);
@@ -102,7 +101,7 @@ void ViewCamera::CalculrateViewMatrix()
 		xVector.X, yVector.X, zVector.X, 0.0f,
 		xVector.Y, yVector.Y, zVector.Y, 0.0f,
 		xVector.Z, yVector.Z, zVector.Z, 0.0f,
-		RenderMath::DotProduct(position, xVector), RenderMath::DotProduct(position, yVector), RenderMath::DotProduct(position, zVector), 1.0f };
+		position.X, position.Y, position.Z, 1.0f };
 
 	return;
 }
@@ -118,6 +117,10 @@ void ViewCamera::CalcularateProjectionMatrix(float fov, float screenWidth, float
 
 	float zScale = farDistance / (farDistance - nearDistance);
 	float zMove = -nearDistance * zScale;
+
+	float zDenominator = farDistance - zMove;
+	zScale /= zDenominator;
+	zMove /= zDenominator;
 
 	*mProjectionMatrix = {
 		width, 0.0f, 0.0f, 0.0f,

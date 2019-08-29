@@ -7,7 +7,7 @@
 #define ScreenHeight 768
 #define ProgramTitle L"RenderingEngine_Win32"
 #define CameraNear 0.0f
-#define CameraFar 1000.0f
+#define CameraFar 10000.0f
 
 // SomWorks :D // Renderer Setup
 #define bUseSoftRenderer true
