@@ -18,16 +18,17 @@ public:
 	void DrawObject(const struct Matrix4x4& viewMatrix, const struct Matrix4x4& projectionMatrix);
 	void DrawMesh(struct Triangle* triangleList, int verticesCount);
 	void ProcessVertexShader(struct Triangle vertices);
-	void TriangleRasterize(struct Triangle2D vertices);
+	void TriangleRasterize(struct Triangle& vertices);
+	void ProcessPixelShader(struct Vector2& position, struct ColorRGBA& vertexColor, struct Vector2& inUV);
 
 private:
 
 	void GetYLocation(float width, float height, float inX, float* outY);
 	void GetYLocationf(float width, float height, float inX, float* outY, float* UpWeight);
-	void RasterizeTopTriangle(struct Vertex2D& point1, struct Vertex2D& point2, struct Vertex2D& point3);
-	void RasterizeBottomTriangle(struct Vertex2D& point1, struct Vertex2D& point2, struct Vertex2D& point3);
-	void DrawFlatLine(struct Vertex2D& point1, struct Vertex2D& point2);
-	void SortVecticesByY(struct Triangle2D* Vertices);
+	void RasterizeTopTriangle(struct Vertex& point1, struct Vertex& point2, struct Vertex& point3);
+	void RasterizeBottomTriangle(struct Vertex& point1, struct Vertex& point2, struct Vertex& point3);
+	void DrawFlatLine(struct Vertex& point1, struct Vertex& point2);
+	void SortVecticesByY(struct Triangle* Vertices);
 	void InitializeZBuffer();
 
 private:
@@ -37,7 +38,7 @@ private:
 	class Object* mObjectList;
 	class TextureHelper* mTextureHelper;
 	struct Matrix4x4* mTransformMatrix;
-	struct Triangle2D* mCurrentTriangle2D;
+	struct Triangle* mCurrentTriangle2D;
 	float* mZDepthBuffer;
 	int mObjectCapacity;
 	int mCurrentObjectIndex;

@@ -3,8 +3,8 @@
 #pragma once
 
 // SomWorks :D // WinAPI Windows Setup
-#define ScreenWidth 1024
-#define ScreenHeight 768
+#define ScreenWidth 800
+#define ScreenHeight 600
 #define ProgramTitle L"RenderingEngine_Win32"
 #define CameraNear 0.0f
 #define CameraFar 10000.0f

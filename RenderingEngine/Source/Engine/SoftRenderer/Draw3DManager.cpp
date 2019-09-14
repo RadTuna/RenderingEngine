@@ -326,6 +326,7 @@ void Draw3DManager::ProcessVertexShader(Triangle vertices)
 	RenderMath::MatrixMul(&vertices.point2.position, *mTransformMatrix);
 	RenderMath::MatrixMul(&vertices.point3.position, *mTransformMatrix);
 
+	// NDC공간으로 X, Y값을 변환하기 위한 연산
 	vertices.point1.position.X /= vertices.point1.position.W;
 	vertices.point2.position.X /= vertices.point2.position.W;
 	vertices.point3.position.X /= vertices.point3.position.W;
@@ -334,7 +335,7 @@ void Draw3DManager::ProcessVertexShader(Triangle vertices)
 	vertices.point2.position.Y /= vertices.point2.position.W;
 	vertices.point3.position.Y /= vertices.point3.position.W;
 
-	
+	// NDC공간에서 스크린공간으로 변환하기 위한 연산
 	vertices.point1.position.X *= ScreenWidth;
 	vertices.point2.position.X *= ScreenWidth;
 	vertices.point3.position.X *= ScreenWidth;
@@ -342,12 +343,11 @@ void Draw3DManager::ProcessVertexShader(Triangle vertices)
 	vertices.point1.position.Y *= ScreenHeight;
 	vertices.point2.position.Y *= ScreenHeight;
 	vertices.point3.position.Y *= ScreenHeight;
-	
 
 	TriangleRasterize(vertices);
 }
 
-void Draw3DManager::TriangleRasterize(Triangle2D vertices)
+void Draw3DManager::TriangleRasterize(Triangle& vertices)
 {
 	mCurrentTriangle2D = &vertices;
 
@@ -366,7 +366,7 @@ void Draw3DManager::TriangleRasterize(Triangle2D vertices)
 	}
 	else
 	{
-		Vertex2D NewVertex;
+		Vertex NewVertex;
 		NewVertex.position.Y = vertices.point2.position.Y;
 		NewVertex.position.X = (vertices.point1.position.X + ((vertices.point2.position.Y - vertices.point1.position.Y) /
 			(vertices.point3.position.Y - vertices.point1.position.Y)) * (vertices.point3.position.X - vertices.point1.position.X));
@@ -375,7 +375,7 @@ void Draw3DManager::TriangleRasterize(Triangle2D vertices)
 	}
 }
 
-void Draw3DManager::RasterizeBottomTriangle(Vertex2D& point1, Vertex2D& point2, Vertex2D& point3)
+void Draw3DManager::RasterizeBottomTriangle(Vertex& point1, Vertex& point2, Vertex& point3)
 {
 	if (!RenderMath::IsNearlyFloat(point2.position.Y, point3.position.Y))
 	{
@@ -390,11 +390,11 @@ void Draw3DManager::RasterizeBottomTriangle(Vertex2D& point1, Vertex2D& point2, 
 
 	for (int ScanLineY = (int)point1.position.Y; ScanLineY >= point2.position.Y; --ScanLineY)
 	{
-		Vertex2D TempVertex1;
-		Vertex2D TempVertex2;
+		Vertex TempVertex1;
+		Vertex TempVertex2;
 
-		TempVertex1.position = RenderMath::Vector3Set(StartPosX, ScanLineY, 1.0f);
-		TempVertex2.position = RenderMath::Vector3Set(EndPosX, ScanLineY, 1.0f);
+		TempVertex1.position = RenderMath::Vector4Set(StartPosX, ScanLineY, 1.0f, 1.0f);
+		TempVertex2.position = RenderMath::Vector4Set(EndPosX, ScanLineY, 1.0f, 1.0f);
 
 		DrawFlatLine(TempVertex1, TempVertex2);
 
@@ -405,7 +405,7 @@ void Draw3DManager::RasterizeBottomTriangle(Vertex2D& point1, Vertex2D& point2, 
 	return;
 }
 
-void Draw3DManager::RasterizeTopTriangle(Vertex2D& point1, Vertex2D& point2, Vertex2D& point3)
+void Draw3DManager::RasterizeTopTriangle(Vertex& point1, Vertex& point2, Vertex& point3)
 {
 	if (!RenderMath::IsNearlyFloat(point1.position.Y, point2.position.Y))
 	{
@@ -420,11 +420,11 @@ void Draw3DManager::RasterizeTopTriangle(Vertex2D& point1, Vertex2D& point2, Ver
 
 	for (int ScanLineY = (int)point3.position.Y; ScanLineY <= point1.position.Y; ++ScanLineY)
 	{
-		Vertex2D TempVertex1;
-		Vertex2D TempVertex2;
+		Vertex TempVertex1;
+		Vertex TempVertex2;
 
-		TempVertex1.position = RenderMath::Vector3Set(StartPosX, ScanLineY, 1.0f);
-		TempVertex2.position = RenderMath::Vector3Set(EndPosX, ScanLineY, 1.0f);
+		TempVertex1.position = RenderMath::Vector4Set(StartPosX, ScanLineY, 1.0f, 1.0f);
+		TempVertex2.position = RenderMath::Vector4Set(EndPosX, ScanLineY, 1.0f, 1.0f);
 
 		DrawFlatLine(TempVertex1, TempVertex2);
 
@@ -435,7 +435,7 @@ void Draw3DManager::RasterizeTopTriangle(Vertex2D& point1, Vertex2D& point2, Ver
 	return;
 }
 
-void Draw3DManager::DrawFlatLine(Vertex2D& point1, Vertex2D& point2)
+void Draw3DManager::DrawFlatLine(Vertex& point1, Vertex& point2)
 {
 	if (point1.position.Y != point2.position.Y)
 	{
@@ -450,59 +450,62 @@ void Draw3DManager::DrawFlatLine(Vertex2D& point1, Vertex2D& point2)
 			continue;
 		}
 
-		if (useTexture == true)
+		Vector2 currentPoint = RenderMath::Vector2Set(i, point1.position.Y);
+
+		Vector3 vertexWeight = mCurrentTriangle2D->GetVertexWeight(currentPoint);
+
+			
+		float currentDepth = 
+			mCurrentTriangle2D->point1.position.Z * vertexWeight.X +
+			mCurrentTriangle2D->point2.position.Z * vertexWeight.Y +
+			mCurrentTriangle2D->point3.position.Z * vertexWeight.Z;
+			
+		if (mZDepthBuffer[ScreenWidth * ((int)currentPoint.Y + ScreenHeight / 2) + ((int)currentPoint.X + ScreenWidth / 2)] > currentDepth)
 		{
-			Vector2 currentPoint = RenderMath::Vector2Set(i, point1.position.Y);
-
-			Vector3 vertexWeight = mCurrentTriangle2D->GetVertexWeight(currentPoint);
-
-			
-			float currentDepth = 
-				mCurrentTriangle2D->point1.position.Z * vertexWeight.X +
-				mCurrentTriangle2D->point2.position.Z * vertexWeight.Y +
-				mCurrentTriangle2D->point3.position.Z * vertexWeight.Z;
-
-			 //currentDepth = RenderMath::NormalizeFloat(currentDepth, CameraNear, CameraFar);
-			
-			if (mZDepthBuffer[ScreenWidth * ((int)currentPoint.Y + ScreenHeight / 2) + ((int)currentPoint.X + ScreenWidth / 2)] > currentDepth)
-			{
-				mZDepthBuffer[ScreenWidth * ((int)currentPoint.Y + ScreenHeight / 2) + ((int)currentPoint.X + ScreenWidth / 2)] = currentDepth;
-			}
-			else
-			{
-				continue;
-			}
-
-			Vector2 currentUV = 
-				mCurrentTriangle2D->point1.UV * vertexWeight.X +
-				mCurrentTriangle2D->point2.UV * vertexWeight.Y +
-				mCurrentTriangle2D->point3.UV * vertexWeight.Z;
-			ColorRGBA currentColor = mTextureHelper->GetPixelColor(currentUV);
-
-			currentColor = currentColor * RenderMath::NormalizeFloat(currentColor.alpha, 0, 255) + (mGDIHelper->GetPixelColor(static_cast<int>(currentPoint.X), static_cast<int>(currentPoint.Y)) * (1.0f - RenderMath::NormalizeFloat(currentColor.alpha, 0, 255)));
-
-			mGDIHelper->SetColor(currentColor);
-
-			mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(currentPoint.X, currentPoint.Y));
+			mZDepthBuffer[ScreenWidth * ((int)currentPoint.Y + ScreenHeight / 2) + ((int)currentPoint.X + ScreenWidth / 2)] = currentDepth;
 		}
 		else
 		{
-			Vector2 currentPoint = RenderMath::Vector2Set(i, point1.position.Y);
-
-			Vector3 vertexWeight = mCurrentTriangle2D->GetVertexWeight(currentPoint);
-			ColorRGBA currentColor =
-				mCurrentTriangle2D->point1.Color * vertexWeight.X +
-				mCurrentTriangle2D->point2.Color * vertexWeight.Y +
-				mCurrentTriangle2D->point3.Color * vertexWeight.Z;
-
-			mGDIHelper->SetColor(currentColor);
-
-			mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(currentPoint.X, currentPoint.Y));
+			continue;
 		}
+
+		// 투영보정보간을 위한 보간된 Z값을 구하는 부분.
+		float currentZ = 
+			mCurrentTriangle2D->point1.position.W * vertexWeight.X +
+			mCurrentTriangle2D->point2.position.W * vertexWeight.Y +
+			mCurrentTriangle2D->point3.position.W * vertexWeight.Z;
+
+		Vector2 currentUV = 
+			mCurrentTriangle2D->point1.UV * vertexWeight.X +
+			mCurrentTriangle2D->point2.UV * vertexWeight.Y +
+			mCurrentTriangle2D->point3.UV * vertexWeight.Z;
+		currentUV = currentUV * currentZ;
+
+		ColorRGBA currentColor =
+			mCurrentTriangle2D->point1.Color * vertexWeight.X +
+			mCurrentTriangle2D->point2.Color * vertexWeight.Y +
+			mCurrentTriangle2D->point3.Color * vertexWeight.Z;
+		currentColor = currentColor * currentZ;
+
+		ProcessPixelShader(currentPoint, currentColor, currentUV);
 	}
 }
 
-void Draw3DManager::SortVecticesByY(Triangle2D* vertices)
+void Draw3DManager::ProcessPixelShader(Vector2& position, ColorRGBA& vertexColor, Vector2& inUV)
+{
+	// 알파 블렌딩을 실시 하는 부분.
+	ColorRGBA currentColor = mTextureHelper->GetPixelColor(inUV);
+	currentColor = currentColor * RenderMath::NormalizeFloat(currentColor.alpha, 0, 255) + 
+		(mGDIHelper->GetPixelColor(static_cast<int>(position.X), static_cast<int>(position.Y)) * 
+		(1.0f - RenderMath::NormalizeFloat(currentColor.alpha, 0, 255)));
+
+	// 픽셀 색상 설정 및 출력.
+	mGDIHelper->SetColor(currentColor);
+	mSoftRenderer->PutPixel(RenderMath::IntFloat2toIntPoint2D(position.X, position.Y));
+
+}
+
+void Draw3DManager::SortVecticesByY(Triangle* vertices)
 {
 	if (!((vertices->point1.position.Y >= vertices->point2.position.Y) && (vertices->point1.position.Y >= vertices->point3.position.Y)))
 	{
@@ -521,23 +524,6 @@ void Draw3DManager::SortVecticesByY(Triangle2D* vertices)
 		std::swap(vertices->point2, vertices->point3);
 	}
 
-
-	if (vertices->point1.position.Y == vertices->point2.position.Y)
-	{
-		if (vertices->point1.position.X > vertices->point1.position.X)
-		{
-			std::swap(vertices->point1, vertices->point2);
-		}
-	}
-
-	if (vertices->point2.position.Y == vertices->point3.position.Y)
-	{
-		if (vertices->point2.position.X > vertices->point3.position.X)
-		{
-			std::swap(vertices->point2, vertices->point3);
-		}
-	}
-
 	return;
 }
 
@@ -549,3 +535,5 @@ void Draw3DManager::InitializeZBuffer()
 		mZDepthBuffer[i] = 1.0f;
 	}
 }
+
+

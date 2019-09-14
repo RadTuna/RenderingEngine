@@ -16,6 +16,7 @@ struct Vector2
 	Vector2 operator-(const Vector2& Other) const;
 	Vector2 operator*(const Vector2& Other) const;
 	Vector2 operator*(const float& Other) const;
+	Vector2 operator/(const float& Other) const;
 };
 
 struct Vector3
@@ -28,6 +29,7 @@ struct Vector3
 	Vector3 operator-(const Vector3& Other) const;
 	Vector3 operator*(const Vector3& Other) const;
 	Vector3 operator*(const float& Other) const;
+	Vector3 operator/(const float& Other) const;
 };
 
 struct Vector4
@@ -41,6 +43,7 @@ struct Vector4
 	Vector4 operator-(const Vector4& Other) const;
 	Vector4 operator*(const Vector4& Other) const;
 	Vector4 operator*(const float& Other) const;
+	Vector4 operator/(const float& Other) const;
 };
 
 struct IntPoint2D
@@ -96,6 +99,7 @@ struct ColorRGBA
 	ColorRGBA operator*(const float& Other) const;
 	ColorRGBA operator+(const ColorRGBA& Other) const;
 	ColorRGBA operator-(const ColorRGBA& Other) const;
+	ColorRGBA operator/(const float& Other) const;
 };
 
 class RenderMath
@@ -130,6 +134,7 @@ public:
 	static bool IsNearlyFloat(float valueA, float valueB, float tolerance = KINDA_SMALL_NUMBER);
 	static float NormalizeFloat(float target, float min, float max);
 	static Vector2 Vector3toVector2(const Vector3& inVector);
+	static Vector2 Vector4toVector2(const Vector4& inVector);
 
 	static ColorRGBA ColorRGBASet(BYTE inRed, BYTE inGreen, BYTE inBlue, BYTE inAlpha);
 

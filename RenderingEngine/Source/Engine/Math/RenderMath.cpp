@@ -279,6 +279,14 @@ Vector2 RenderMath::Vector3toVector2(const Vector3& inVector)
 	return temp;
 }
 
+Vector2 RenderMath::Vector4toVector2(const Vector4& inVector)
+{
+	Vector2 temp;
+	temp.X = inVector.X;
+	temp.Y = inVector.Y;
+	return temp;
+}
+
 Vector2 Vector2::operator+(const Vector2& Other) const
 {
 	Vector2 temp;
@@ -308,6 +316,14 @@ Vector2 Vector2::operator*(const float& Other) const
 	Vector2 temp;
 	temp.X = X * Other;
 	temp.Y = Y * Other;
+	return temp;
+}
+
+Vector2 Vector2::operator/(const float& Other) const
+{
+	Vector2 temp;
+	temp.X = X / Other;
+	temp.Y = Y / Other;
 	return temp;
 }
 
@@ -341,6 +357,14 @@ Vector3 Vector3::operator*(const float& Other) const
 	Vector3 temp;
 	temp.X = X * Other;
 	temp.Y = Y * Other;
+	return temp;
+}
+
+Vector3 Vector3::operator/(const float& Other) const
+{
+	Vector3 temp;
+	temp.X = X / Other;
+	temp.Y = Y / Other;
 	return temp;
 }
 
@@ -378,6 +402,15 @@ Vector4 Vector4::operator*(const float& Other) const
 	temp.X = X * Other;
 	temp.Y = Y * Other;
 	temp.Z = Z * Other;
+	return temp;
+}
+
+Vector4 Vector4::operator/(const float& Other) const
+{
+	Vector4 temp;
+	temp.X = X / Other;
+	temp.Y = Y / Other;
+	temp.Z = Z / Other;
 	return temp;
 }
 
@@ -439,6 +472,19 @@ ColorRGBA ColorRGBA::operator-(const ColorRGBA& Other) const
 	temp.green = RenderMath::Clamp<BYTE>(static_cast<BYTE>(green - Other.green), minByte, maxByte);
 	temp.blue = RenderMath::Clamp<BYTE>(static_cast<BYTE>(blue - Other.blue), minByte, maxByte);
 	temp.alpha = RenderMath::Clamp<BYTE>(static_cast<BYTE>(alpha - Other.alpha), minByte, maxByte);
+	return temp;
+}
+
+ColorRGBA ColorRGBA::operator/(const float& Other) const
+{
+	ColorRGBA temp;
+	BYTE minByte = 0;
+	BYTE maxByte = 255;
+
+	temp.red = RenderMath::Clamp<BYTE>(static_cast<BYTE>(red / Other), minByte, maxByte);
+	temp.green = RenderMath::Clamp<BYTE>(static_cast<BYTE>(green / Other), minByte, maxByte);
+	temp.blue = RenderMath::Clamp<BYTE>(static_cast<BYTE>(blue / Other), minByte, maxByte);
+	temp.alpha = RenderMath::Clamp<BYTE>(static_cast<BYTE>(alpha / Other), minByte, maxByte);
 	return temp;
 }
 

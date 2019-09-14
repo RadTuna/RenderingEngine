@@ -79,39 +79,40 @@ void Object::DeepCopy(Object* target)
 	target->SetScale(mScale);
 }
 
-Triangle2D::Triangle2D(const Triangle& Other)
+Triangle::Triangle(const Triangle& Other)
 {
 	point1 = Other.point1;
 	point2 = Other.point2;
 	point3 = Other.point3;
 }
 
-Triangle2D& Triangle2D::operator=(const Triangle& Other)
+void Triangle::Initialize()
 {
-	point1 = Other.point1;
-	point2 = Other.point2;
-	point3 = Other.point3;
-
-	return *this;
-}
-
-void Triangle2D::Initialize()
-{
-	mVectorU = RenderMath::Vector3toVector2(point2.position - point1.position);
-	mVectorV = RenderMath::Vector3toVector2(point3.position - point1.position);
+	mVectorU = RenderMath::Vector4toVector2(point2.position - point1.position);
+	mVectorV = RenderMath::Vector4toVector2(point3.position - point1.position);
 
 	mDotUU = RenderMath::DotProduct(mVectorU, mVectorU);
 	mDotUV = RenderMath::DotProduct(mVectorU, mVectorV);
 	mDotVV = RenderMath::DotProduct(mVectorV, mVectorV);
 
 	mWeightDenominator = mDotUU * RenderMath::DotProduct(mVectorV, mVectorV) - mDotUV * mDotUV;
+
+	// 투영보정보간을 위한 전처리 작업.
+	point1.Color = point1.Color / point1.position.W;
+	point2.Color = point2.Color / point2.position.W;
+	point3.Color = point3.Color / point3.position.W;
+
+	point1.UV = point1.UV / point1.position.W;
+	point2.UV = point2.UV / point2.position.W;
+	point3.UV = point3.UV / point3.position.W;
+	
 }
 
-Vector3 Triangle2D::GetVertexWeight(Vector2& inPoint)
+Vector3 Triangle::GetVertexWeight(Vector2& inPoint)
 {
 	Vector3 Result;
 
-	mVectorW = inPoint - RenderMath::Vector3toVector2(point1.position);
+	mVectorW = inPoint - RenderMath::Vector4toVector2(point1.position);
 
 	Result.Y = (RenderMath::DotProduct(mVectorW, mVectorU) * mDotVV
 		- RenderMath::DotProduct(mVectorW, mVectorV) * mDotUV) / mWeightDenominator;
@@ -120,16 +121,5 @@ Vector3 Triangle2D::GetVertexWeight(Vector2& inPoint)
 	Result.X = 1.0f - Result.Y - Result.Z;
 
 	return Result;
-}
-
-Vertex2D& Vertex2D::operator=(const Vertex& Other)
-{
-	position.X = Other.position.X;
-	position.Y = Other.position.Y;
-	position.Z = Other.position.Z;
-	Color = Other.Color;
-	UV = Other.UV;
-
-	return *this;
 }
 
