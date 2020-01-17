@@ -418,7 +418,7 @@ void Draw3DManager::RasterizeTopTriangle(Vertex& point1, Vertex& point2, Vertex&
 	float StartPosX = point3.position.X;
 	float EndPosX = point3.position.X;
 
-	for (int ScanLineY = (int)point3.position.Y; ScanLineY <= point1.position.Y; ++ScanLineY)
+	for (int ScanLineY = (int)point3.position.Y; ScanLineY <= point2.position.Y; ++ScanLineY)
 	{
 		Vertex TempVertex1;
 		Vertex TempVertex2;
